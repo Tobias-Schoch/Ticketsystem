@@ -19,16 +19,16 @@ import { ROUTES } from './constants';
 function AppInitializer({ children }: { children: React.ReactNode }) {
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const initializeTheme = useUIStore((state) => state.initializeTheme);
+  const initializeUI = useUIStore((state) => state.initializeUI);
   const loadTickets = useTicketStore((state) => state.loadTickets);
   const loadUsers = useUserStore((state) => state.loadUsers);
 
   useEffect(() => {
-    // Initialize theme
-    initializeTheme();
+    // Initialize UI (theme, sidebar state)
+    initializeUI();
     // Initialize auth (check for existing session)
     initializeAuth();
-  }, [initializeAuth, initializeTheme]);
+  }, [initializeAuth, initializeUI]);
 
   // Load data when authenticated
   useEffect(() => {

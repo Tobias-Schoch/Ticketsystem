@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
   TICKETS: 'aufgaben_tickets',
   USERS: 'aufgaben_users',
   THEME: 'aufgaben_theme',
+  SIDEBAR: 'aufgaben_sidebar',
 } as const;
 
 export const ROUTES = {

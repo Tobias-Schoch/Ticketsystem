@@ -12,7 +12,7 @@ interface UIState {
   toggleTheme: () => void;
   setSidebarOpen: (open: boolean) => void;
   setMobileNavOpen: (open: boolean) => void;
-  initializeTheme: () => void;
+  initializeUI: () => void;
 }
 
 export const useUIStore = create<UIState>((set, get) => ({
@@ -36,6 +36,7 @@ export const useUIStore = create<UIState>((set, get) => ({
   },
 
   setSidebarOpen: (open: boolean) => {
+    setStorageItem(STORAGE_KEYS.SIDEBAR, open);
     set({ sidebarOpen: open });
   },
 
@@ -43,7 +44,8 @@ export const useUIStore = create<UIState>((set, get) => ({
     set({ mobileNavOpen: open });
   },
 
-  initializeTheme: () => {
+  initializeUI: () => {
+    // Initialize theme
     const savedTheme = getStorageItem<Theme>(STORAGE_KEYS.THEME);
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const theme = savedTheme || (prefersDark ? 'dark' : 'light');
@@ -54,6 +56,10 @@ export const useUIStore = create<UIState>((set, get) => ({
       document.documentElement.classList.remove('dark');
     }
 
-    set({ theme });
+    // Initialize sidebar
+    const savedSidebar = getStorageItem<boolean>(STORAGE_KEYS.SIDEBAR);
+    const sidebarOpen = savedSidebar !== null ? savedSidebar : true;
+
+    set({ theme, sidebarOpen });
   },
 }));
