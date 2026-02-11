@@ -1,4 +1,5 @@
 import { cn } from '../../utils/cn';
+import { getBackendUrl } from '../../api/client';
 
 interface AvatarProps {
   src?: string | null;
@@ -44,10 +45,12 @@ export function Avatar({ src, name, size = 'md', className }: AvatarProps) {
     xl: 'h-20 w-20 text-xl',
   };
 
-  if (src) {
+  const imageUrl = getBackendUrl(src);
+
+  if (imageUrl) {
     return (
       <img
-        src={src}
+        src={imageUrl}
         alt={name}
         className={cn(
           'rounded-full object-cover ring-2 ring-white dark:ring-sage-700 shadow-soft',

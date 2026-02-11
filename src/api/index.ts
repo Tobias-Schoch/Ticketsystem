@@ -1,4 +1,4 @@
-export { api, ApiError } from './client';
+export { api, ApiError, getBackendUrl } from './client';
 export type { ApiResponse, PaginatedResponse } from './client';
 
 export { authApi } from './auth';

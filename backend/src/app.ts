@@ -49,9 +49,13 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Serve uploaded files
+// Serve uploaded files with CORS headers
 logger.info('Using local file storage at: ' + storageConfig.localStoragePath);
-app.use('/uploads', express.static(storageConfig.localStoragePath, {
+app.use('/uploads', (req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+}, express.static(storageConfig.localStoragePath, {
   maxAge: '1d',
   etag: true,
 }));

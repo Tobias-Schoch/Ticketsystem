@@ -1,4 +1,13 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api/v1';
+const BACKEND_URL = API_BASE_URL.replace('/api/v1', '');
+
+// Convert relative backend URLs to absolute URLs
+export function getBackendUrl(path: string | null | undefined): string | null {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  if (path.startsWith('/uploads')) return `${BACKEND_URL}${path}`;
+  return path;
+}
 
 export interface ApiResponse<T = unknown> {
   success: boolean;

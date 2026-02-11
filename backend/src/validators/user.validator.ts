@@ -10,11 +10,10 @@ export const updateUserSchema = z.object({
     .max(100, 'Name must be at most 100 characters')
     .transform(sanitizeString)
     .optional(),
-  email: z
+  avatarUrl: z
     .string()
-    .email('Invalid email address')
-    .transform(sanitizeString)
-    .transform((v) => v.toLowerCase())
+    .max(500, 'Avatar URL too long')
+    .nullable()
     .optional(),
 });
 
