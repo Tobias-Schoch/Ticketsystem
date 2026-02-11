@@ -38,7 +38,7 @@ export function KanbanColumn({ id, title, tickets, emoji }: KanbanColumnProps) {
         )}
       >
         <SortableContext items={tickets.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-3 stagger-list">
+          <div className="space-y-2 sm:space-y-3 stagger-list">
             {tickets.map((ticket, index) => (
               <div
                 key={ticket.id}
@@ -49,9 +49,9 @@ export function KanbanColumn({ id, title, tickets, emoji }: KanbanColumnProps) {
               </div>
             ))}
             {tickets.length === 0 && (
-              <div className="py-12 text-center">
-                <p className="text-sage-400 dark:text-sage-500 text-sm">Keine Aufgaben</p>
-                <p className="text-sage-300 dark:text-sage-600 text-xs mt-1">
+              <div className="py-8 sm:py-12 text-center">
+                <p className="text-sage-400 dark:text-sage-500 text-xs sm:text-sm">Keine Aufgaben</p>
+                <p className="text-sage-300 dark:text-sage-600 text-[10px] sm:text-xs mt-1">
                   Ziehe eine Aufgabe hierher
                 </p>
               </div>
