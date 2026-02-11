@@ -67,7 +67,7 @@ export function MobileNav() {
       />
 
       {/* Sidebar */}
-      <div className="absolute inset-y-0 left-0 w-80 bg-white/95 dark:bg-sage-900/95 backdrop-blur-xl shadow-soft-lg animate-slide-in-left">
+      <div className="absolute inset-y-0 left-0 w-[85vw] max-w-80 bg-white/95 dark:bg-sage-900/95 backdrop-blur-xl shadow-soft-lg animate-slide-in-left">
         {/* Header */}
         <div className="flex items-center justify-between h-20 px-5 border-b border-sage-100 dark:border-sage-700">
           <div className="flex items-center gap-3">

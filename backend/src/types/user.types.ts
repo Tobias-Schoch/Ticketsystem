@@ -5,6 +5,7 @@ export interface UserPayload {
   email: string;
   name: string;
   role: UserRole;
+  avatarUrl?: string | null;
 }
 
 export interface CreateUserInput {

@@ -33,7 +33,7 @@ export function Header() {
   }, []);
 
   return (
-    <header className="h-20 bg-white/50 dark:bg-sage-900/50 backdrop-blur-xl border-b border-sage-100 dark:border-sage-700 flex items-center justify-between px-6">
+    <header className="relative z-40 h-20 bg-white/50 dark:bg-sage-900/50 backdrop-blur-xl border-b border-sage-100 dark:border-sage-700 flex items-center justify-between px-6">
       {/* Mobile menu button */}
       <button
         onClick={() => setMobileNavOpen(true)}
@@ -69,7 +69,7 @@ export function Header() {
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-sage-800 rounded-2xl shadow-lg border border-sage-100 dark:border-sage-700 py-2 z-50 animate-fade-in">
+            <div className="absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-56 max-w-56 bg-white dark:bg-sage-800 rounded-2xl shadow-lg border border-sage-100 dark:border-sage-700 py-2 z-50 animate-fade-in">
               {/* Profile Link */}
               <Link
                 to={ROUTES.PROFILE}

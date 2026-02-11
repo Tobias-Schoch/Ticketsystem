@@ -48,16 +48,16 @@ export function RecentActivity() {
             <Link
               key={ticket.id}
               to={`/aufgaben/${ticket.id}`}
-              className="flex items-start gap-4 p-4 -mx-2 rounded-2xl hover:bg-sage-50/50 dark:hover:bg-sage-800/50 transition-all duration-300 group"
+              className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 -mx-2 rounded-xl sm:rounded-2xl hover:bg-sage-50/50 dark:hover:bg-sage-800/50 transition-all duration-300 group"
             >
               {creator && (
                 <Avatar src={creator.avatarUrl} name={creator.name} size="sm" />
               )}
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-sage-800 dark:text-sage-100 truncate group-hover:text-calm-600 dark:group-hover:text-calm-400 transition-colors">
+                <p className="font-medium text-sage-800 dark:text-sage-100 truncate group-hover:text-calm-600 dark:group-hover:text-calm-400 transition-colors text-sm sm:text-base">
                   {ticket.title}
                 </p>
-                <div className="flex flex-wrap items-center gap-2 mt-2">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1.5 sm:mt-2">
                   <Badge variant="status" status={ticket.status}>
                     {STATUS_LABELS[ticket.status]}
                   </Badge>
@@ -70,8 +70,8 @@ export function RecentActivity() {
                 </div>
               </div>
               {hasComments && (
-                <div className="flex items-center gap-1 text-sage-400 dark:text-sage-500 bg-sage-50 dark:bg-sage-800 px-2 py-1 rounded-full">
-                  <MessageSquare className="h-3.5 w-3.5" />
+                <div className="flex items-center gap-1 text-sage-400 dark:text-sage-500 bg-sage-50 dark:bg-sage-800 px-2 py-1 rounded-full flex-shrink-0">
+                  <MessageSquare className="h-3 sm:h-3.5 w-3 sm:w-3.5" />
                   <span className="text-xs">{ticket.comments.length}</span>
                 </div>
               )}

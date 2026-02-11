@@ -45,34 +45,36 @@ export function UserManagement() {
 
         return (
           <Card key={user.id}>
-            <div className="flex items-center gap-4">
-              <Avatar src={user.avatarUrl} name={user.name} size="lg" />
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <Avatar src={user.avatarUrl} name={user.name} size="lg" />
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                    {user.name}
-                  </h3>
-                  {isCurrentUser && (
-                    <Badge>Du</Badge>
-                  )}
-                  <Badge className={user.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400' : ''}>
-                    {user.role === 'admin' ? 'Admin' : 'Mitglied'}
-                  </Badge>
-                  {!user.isActive && (
-                    <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                      Inaktiv
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                      {user.name}
+                    </h3>
+                    {isCurrentUser && (
+                      <Badge>Du</Badge>
+                    )}
+                    <Badge className={user.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400' : ''}>
+                      {user.role === 'admin' ? 'Admin' : 'Mitglied'}
                     </Badge>
-                  )}
+                    {!user.isActive && (
+                      <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                        Inaktiv
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                    Mitglied seit {formatDate(user.createdAt)}
+                  </p>
                 </div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
-                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                  Mitglied seit {formatDate(user.createdAt)}
-                </p>
               </div>
 
               {!isCurrentUser && (
-                <div className="relative">
+                <div className="sm:ml-auto pl-14 sm:pl-0">
                   {user.isActive ? (
                     <Button
                       variant="ghost"
@@ -80,8 +82,8 @@ export function UserManagement() {
                       onClick={() => setActionUser({ id: user.id, action: 'deactivate' })}
                       className="text-red-500 hover:text-red-600"
                     >
-                      <UserX className="h-4 w-4 mr-1" />
-                      Deaktivieren
+                      <UserX className="h-4 w-4 sm:mr-1" />
+                      <span className="hidden sm:inline">Deaktivieren</span>
                     </Button>
                   ) : (
                     <Button
@@ -90,8 +92,8 @@ export function UserManagement() {
                       onClick={() => setActionUser({ id: user.id, action: 'activate' })}
                       className="text-green-500 hover:text-green-600"
                     >
-                      <UserCheck className="h-4 w-4 mr-1" />
-                      Aktivieren
+                      <UserCheck className="h-4 w-4 sm:mr-1" />
+                      <span className="hidden sm:inline">Aktivieren</span>
                     </Button>
                   )}
                 </div>
