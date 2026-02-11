@@ -241,8 +241,8 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
         onConfirm={handleDelete}
-        title="Ticket löschen"
-        description="Möchtest du dieses Ticket wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
+        title="Aufgabe löschen"
+        description="Möchtest du diese Aufgabe wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
         confirmLabel="Löschen"
         variant="danger"
         isLoading={isDeleting}

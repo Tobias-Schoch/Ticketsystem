@@ -19,10 +19,10 @@ export function TicketList() {
     return (
       <EmptyState
         icon={<TicketIcon className="h-12 w-12" />}
-        title="Keine Tickets gefunden"
-        description="Es gibt keine Tickets, die deinen Filterkriterien entsprechen."
+        title="Keine Aufgaben gefunden"
+        description="Es gibt keine Aufgaben, die deinen Filterkriterien entsprechen."
         action={{
-          label: 'Neues Ticket erstellen',
+          label: 'Neue Aufgabe erstellen',
           onClick: () => window.location.href = ROUTES.TICKET_NEW,
         }}
       />
@@ -36,7 +36,7 @@ export function TicketList() {
         const creator = getUserById(ticket.creatorId);
 
         return (
-          <Link key={ticket.id} to={`/tickets/${ticket.id}`}>
+          <Link key={ticket.id} to={`/aufgaben/${ticket.id}`}>
             <Card className="hover:shadow-lg transition-shadow">
               <div className="flex items-start gap-4">
                 {/* Status indicator */}
