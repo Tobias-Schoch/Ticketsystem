@@ -1,0 +1,73 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ticketsystem-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-ticketsystem}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-ticketsystem}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ticketsystem-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ticketsystem-backend
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    environment:
+      NODE_ENV: production
+      PORT: 8002
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-ticketsystem}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_EXPIRY: ${JWT_ACCESS_EXPIRY:-15m}
+      JWT_REFRESH_EXPIRY: ${JWT_REFRESH_EXPIRY:-7d}
+      CORS_ORIGIN: ${CORS_ORIGIN:-https://ticket.schoch.studio}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-noreply@ticketsystem.de}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-Ticketsystem}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@ticketsystem.de}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      ADMIN_NAME: ${ADMIN_NAME:-Administrator}
+    volumes:
+      - uploads_data:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ticketsystem-network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ticketsystem-frontend
+    restart: unless-stopped
+    ports:
+      - "3002:80"
+    depends_on:
+      - backend
+    networks:
+      - ticketsystem-network
+
+volumes:
+  postgres_data:
+  uploads_data:
+
+networks:
+  ticketsystem-network:
+    driver: bridge

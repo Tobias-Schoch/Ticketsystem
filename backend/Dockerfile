@@ -28,6 +28,6 @@ RUN mkdir -p uploads && chown -R expressjs:nodejs uploads
 
 USER expressjs
 
-EXPOSE 3001
+EXPOSE 8002
 
 CMD ["sh", "-c", "npm run db:migrate:prod && npm start"]
