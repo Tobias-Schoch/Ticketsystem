@@ -5,12 +5,12 @@ import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { Textarea } from '../../components/ui/Textarea';
 import { Select } from '../../components/ui/Select';
-import { ImageUpload } from '../../components/common/ImageUpload';
 import { UserSelect } from '../../components/common/UserSelect';
 import { useTickets } from '../../hooks/useTickets';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../stores/toastStore';
 import { PRIORITIES } from '../../constants';
-import type { TicketPriority, TicketImage } from '../../types';
+import type { TicketPriority } from '../../types';
 
 interface TicketFormProps {
   mode?: 'create' | 'edit';
@@ -20,7 +20,6 @@ interface TicketFormProps {
     priority: TicketPriority;
     assigneeId: string | null;
     dueDate: string | null;
-    images: TicketImage[];
   };
   ticketId?: string;
 }
@@ -29,13 +28,13 @@ export function TicketForm({ mode = 'create', initialData, ticketId }: TicketFor
   const navigate = useNavigate();
   const { createTicket, updateTicket } = useTickets();
   const { user } = useAuth();
+  const toast = useToast();
 
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');
   const [priority, setPriority] = useState<TicketPriority>(initialData?.priority || 'medium');
   const [assigneeId, setAssigneeId] = useState(initialData?.assigneeId || '');
   const [dueDate, setDueDate] = useState(initialData?.dueDate ? initialData.dueDate.split('T')[0] : '');
-  const [images, setImages] = useState<TicketImage[]>(initialData?.images || []);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
 
@@ -67,27 +66,27 @@ export function TicketForm({ mode = 'create', initialData, ticketId }: TicketFor
       const dueDateISO = dueDate ? new Date(dueDate).toISOString() : null;
 
       if (mode === 'create') {
-        const ticket = createTicket({
+        const ticket = await createTicket({
           title: title.trim(),
           description: description.trim(),
           priority,
           assigneeId: assigneeId || null,
           creatorId: user.id,
           dueDate: dueDateISO,
-          images,
         });
         navigate(`/aufgaben/${ticket.id}`);
       } else if (ticketId) {
-        updateTicket(ticketId, {
+        await updateTicket(ticketId, {
           title: title.trim(),
           description: description.trim(),
           priority,
           assigneeId: assigneeId || null,
           dueDate: dueDateISO,
-          images,
         });
         navigate(`/aufgaben/${ticketId}`);
       }
+    } catch {
+      // Error is handled by useTickets hook with toast
     } finally {
       setIsLoading(false);
     }
@@ -152,12 +151,9 @@ export function TicketForm({ mode = 'create', initialData, ticketId }: TicketFor
         placeholder="Noch niemand zugewiesen"
       />
 
-      <div>
-        <label className="block text-sm font-medium text-sage-600 dark:text-sage-300 mb-2">
-          Bilder anhängen
-        </label>
-        <ImageUpload images={images} onChange={setImages} maxImages={5} />
-      </div>
+      <p className="text-sm text-sage-500 dark:text-sage-400">
+        Bilder können nach dem Erstellen der Aufgabe hinzugefügt werden.
+      </p>
 
       <div className="flex justify-end gap-3 pt-6 border-t border-sage-100 dark:border-sage-700">
         <Button type="button" variant="ghost" onClick={() => navigate(-1)}>

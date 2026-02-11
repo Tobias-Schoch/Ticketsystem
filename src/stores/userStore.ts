@@ -1,99 +1,101 @@
 import { create } from 'zustand';
 import type { User } from '../types';
-import type { UserWithPassword } from '../data/mockUsers';
-import { STORAGE_KEYS } from '../constants';
-import { getStorageItem, setStorageItem } from '../utils/storage';
-import { generateId, getNow } from '../utils/dateUtils';
-import { hashPassword, generatePassword } from '../utils/passwordGenerator';
+import { usersApi, adminApi, ApiError } from '../api';
 
 interface UserState {
   users: User[];
   isLoading: boolean;
+  error: string | null;
 
-  loadUsers: () => void;
+  loadUsers: () => Promise<void>;
   getUserById: (id: string) => User | undefined;
-  createUser: (email: string, name: string, role: 'admin' | 'member') => { user: User; password: string };
-  updateUser: (id: string, updates: Partial<User>) => void;
-  deactivateUser: (id: string) => void;
-  activateUser: (id: string) => void;
-  changePassword: (userId: string, newPassword: string) => void;
+  createUser: (
+    email: string,
+    name: string,
+    role: 'admin' | 'member'
+  ) => Promise<{ user: User; password: string } | { error: string }>;
+  updateUser: (id: string, updates: Partial<User>) => Promise<void>;
+  deactivateUser: (id: string) => Promise<void>;
+  activateUser: (id: string) => Promise<void>;
+  refreshUsers: () => Promise<void>;
 }
 
 export const useUserStore = create<UserState>((set, get) => ({
   users: [],
   isLoading: true,
+  error: null,
 
-  loadUsers: () => {
-    const savedUsers = getStorageItem<UserWithPassword[]>(STORAGE_KEYS.USERS) || [];
-    // Strip password hashes for the user list
-    const usersWithoutPasswords: User[] = savedUsers.map(({ passwordHash: _, ...user }) => user);
-    set({ users: usersWithoutPasswords, isLoading: false });
+  loadUsers: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      const users = await usersApi.getAll();
+      set({ users, isLoading: false });
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Laden der Benutzer';
+      set({ error: message, isLoading: false });
+    }
   },
 
   getUserById: (id) => {
     return get().users.find((user) => user.id === id);
   },
 
-  createUser: (email, name, role) => {
-    const password = generatePassword(12);
-    const passwordHash = hashPassword(password);
-
-    const newUserWithPassword: UserWithPassword = {
-      id: generateId(),
-      email,
-      name,
-      avatarUrl: null,
-      role,
-      isActive: true,
-      createdAt: getNow(),
-      passwordHash,
-    };
-
-    const { passwordHash: _, ...newUser } = newUserWithPassword;
-
-    // Update storage with password
-    const savedUsers = getStorageItem<UserWithPassword[]>(STORAGE_KEYS.USERS) || [];
-    setStorageItem(STORAGE_KEYS.USERS, [...savedUsers, newUserWithPassword]);
-
-    // Update state without password
-    set((state) => ({
-      users: [...state.users, newUser],
-    }));
-
-    return { user: newUser, password };
+  createUser: async (email, name, role) => {
+    try {
+      const response = await adminApi.createUser({ email, name, role });
+      // Add new user to state
+      set((state) => ({
+        users: [...state.users, response.user],
+      }));
+      return { user: response.user, password: response.temporaryPassword };
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Erstellen des Benutzers';
+      return { error: message };
+    }
   },
 
-  updateUser: (id, updates) => {
-    // Update users list in storage (with passwords)
-    const savedUsers = getStorageItem<UserWithPassword[]>(STORAGE_KEYS.USERS) || [];
-    const updatedSavedUsers = savedUsers.map((user) =>
-      user.id === id ? { ...user, ...updates } : user
-    );
-    setStorageItem(STORAGE_KEYS.USERS, updatedSavedUsers);
-
-    // Update state (without passwords)
-    set((state) => ({
-      users: state.users.map((user) =>
-        user.id === id ? { ...user, ...updates } : user
-      ),
-    }));
+  updateUser: async (id, updates) => {
+    try {
+      const updatedUser = await usersApi.update(id, updates);
+      set((state) => ({
+        users: state.users.map((user) => (user.id === id ? updatedUser : user)),
+      }));
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Aktualisieren des Benutzers';
+      throw new Error(message);
+    }
   },
 
-  deactivateUser: (id) => {
-    get().updateUser(id, { isActive: false });
+  deactivateUser: async (id) => {
+    try {
+      const updatedUser = await adminApi.deactivateUser(id);
+      set((state) => ({
+        users: state.users.map((user) => (user.id === id ? updatedUser : user)),
+      }));
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Deaktivieren des Benutzers';
+      throw new Error(message);
+    }
   },
 
-  activateUser: (id) => {
-    get().updateUser(id, { isActive: true });
+  activateUser: async (id) => {
+    try {
+      const updatedUser = await adminApi.activateUser(id);
+      set((state) => ({
+        users: state.users.map((user) => (user.id === id ? updatedUser : user)),
+      }));
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Aktivieren des Benutzers';
+      throw new Error(message);
+    }
   },
 
-  changePassword: (userId, newPassword) => {
-    const savedUsers = getStorageItem<UserWithPassword[]>(STORAGE_KEYS.USERS) || [];
-    const updatedUsers = savedUsers.map((user) =>
-      user.id === userId
-        ? { ...user, passwordHash: hashPassword(newPassword) }
-        : user
-    );
-    setStorageItem(STORAGE_KEYS.USERS, updatedUsers);
+  refreshUsers: async () => {
+    await get().loadUsers();
   },
 }));

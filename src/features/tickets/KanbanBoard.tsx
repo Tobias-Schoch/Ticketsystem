@@ -75,7 +75,7 @@ export function KanbanBoard() {
   );
 
   const handleDragEnd = useCallback(
-    (event: DragEndEvent) => {
+    async (event: DragEndEvent) => {
       const { active, over } = event;
       setActiveTicket(null);
 
@@ -88,14 +88,18 @@ export function KanbanBoard() {
       if (STATUSES.some((s) => s.value === newStatus)) {
         const ticket = getTicketById(ticketId);
         if (ticket && ticket.status !== newStatus) {
-          updateStatus(ticketId, newStatus);
-          const messages = {
-            'open': 'Aufgabe ist jetzt offen',
-            'in-progress': 'Du bist dran!',
-            'review': 'Bereit zur Überprüfung',
-            'done': 'Geschafft!',
-          };
-          toast.success(messages[newStatus]);
+          try {
+            await updateStatus(ticketId, newStatus);
+            const messages = {
+              'open': 'Aufgabe ist jetzt offen',
+              'in-progress': 'Du bist dran!',
+              'review': 'Bereit zur Überprüfung',
+              'done': 'Geschafft!',
+            };
+            toast.success(messages[newStatus]);
+          } catch {
+            toast.error('Status konnte nicht geändert werden');
+          }
         }
       }
     },

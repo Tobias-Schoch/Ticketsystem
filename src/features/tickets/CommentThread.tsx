@@ -24,6 +24,7 @@ export function CommentThread({ ticketId, comments }: CommentThreadProps) {
   const [newComment, setNewComment] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,17 +33,26 @@ export function CommentThread({ ticketId, comments }: CommentThreadProps) {
 
     setIsSubmitting(true);
     try {
-      addComment(ticketId, user.id, newComment.trim());
+      await addComment(ticketId, newComment.trim());
       setNewComment('');
+    } catch {
+      // Error handled by useTickets
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (deleteId) {
-      deleteComment(ticketId, deleteId);
-      setDeleteId(null);
+      setIsDeleting(true);
+      try {
+        await deleteComment(ticketId, deleteId);
+        setDeleteId(null);
+      } catch {
+        // Error handled by useTickets
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -121,6 +131,7 @@ export function CommentThread({ ticketId, comments }: CommentThreadProps) {
         description="Möchtest du diesen Kommentar wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
         confirmLabel="Löschen"
         variant="danger"
+        isLoading={isDeleting}
       />
     </div>
   );

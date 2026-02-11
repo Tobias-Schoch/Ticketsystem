@@ -45,14 +45,14 @@ export function LoginForm() {
     setIsLoading(true);
 
     try {
-      const success = await login(email, password);
+      const result = await login(email, password);
 
-      if (success) {
+      if (result.success) {
         toast.success('Schön, dass du da bist!');
         navigate(ROUTES.DASHBOARD);
       } else {
-        toast.error('Das hat leider nicht geklappt');
-        setErrors({ password: 'E-Mail oder Passwort stimmt nicht' });
+        toast.error(result.error || 'Das hat leider nicht geklappt');
+        setErrors({ password: result.error || 'E-Mail oder Passwort stimmt nicht' });
       }
     } catch {
       toast.error('Etwas ist schiefgelaufen');
@@ -111,14 +111,13 @@ export function LoginForm() {
         {isLoading ? 'Einen Moment...' : 'Anmelden'}
       </Button>
 
-      <div className="mt-8 p-5 bg-gradient-to-br from-calm-50 to-sage-50 dark:from-calm-900/30 dark:to-sage-900/30 rounded-2xl border border-sage-100 dark:border-sage-700">
+      <div className="mt-8 p-5 bg-gradient-to-br from-warmth-50 to-sand-50 dark:from-warmth-900/30 dark:to-sand-900/30 rounded-2xl border border-sand-200 dark:border-sage-700">
         <div className="flex items-center gap-2 text-sage-600 dark:text-sage-300 mb-3">
           <Heart className="h-4 w-4 text-warmth-400" />
           <span className="text-sm font-medium">Zum Ausprobieren</span>
         </div>
         <div className="space-y-1 text-sm text-sage-500 dark:text-sage-400">
-          <p><span className="text-sage-600 dark:text-sage-300 font-medium">Team-Lead:</span> anna@beispiel.de / anna123</p>
-          <p><span className="text-sage-600 dark:text-sage-300 font-medium">Mitglied:</span> max@beispiel.de / max123</p>
+          <p><span className="text-sage-600 dark:text-sage-300 font-medium">Admin:</span> admin@ticketsystem.de / ChangeThisPassword123!</p>
         </div>
       </div>
     </form>

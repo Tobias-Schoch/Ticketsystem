@@ -5,13 +5,10 @@ import {
   KanbanSquare,
   TicketIcon,
   Plus,
-  User,
-  Shield,
   X,
   Leaf,
 } from 'lucide-react';
 import { cn } from '../utils/cn';
-import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../stores/uiStore';
 import { ROUTES } from '../constants';
 
@@ -46,7 +43,6 @@ function NavItem({ to, icon, label, onClick, end = false }: NavItemProps) {
 }
 
 export function MobileNav() {
-  const { isAdmin } = useAuth();
   const { mobileNavOpen, setMobileNavOpen } = useUIStore();
 
   useEffect(() => {
@@ -119,24 +115,6 @@ export function MobileNav() {
             label="Neue Aufgabe"
             onClick={closeNav}
           />
-
-          <div className="pt-4 mt-4 border-t border-sage-100 dark:border-sage-700" />
-
-          <NavItem
-            to={ROUTES.PROFILE}
-            icon={<User className="h-5 w-5" />}
-            label="Mein Profil"
-            onClick={closeNav}
-          />
-
-          {isAdmin && (
-            <NavItem
-              to={ROUTES.ADMIN}
-              icon={<Shield className="h-5 w-5" />}
-              label="Team verwalten"
-              onClick={closeNav}
-            />
-          )}
         </nav>
       </div>
     </div>

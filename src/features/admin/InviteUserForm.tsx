@@ -43,9 +43,18 @@ export function InviteUserForm() {
 
     setIsLoading(true);
     try {
-      const { password } = createUser(email.trim(), name.trim(), role);
-      setGeneratedPassword(password);
-      toast.success('Benutzer erfolgreich eingeladen');
+      const result = await createUser(email.trim(), name.trim(), role);
+      if ('error' in result) {
+        toast.error(result.error);
+        if (result.error.toLowerCase().includes('email') || result.error.toLowerCase().includes('e-mail')) {
+          setErrors({ email: result.error });
+        }
+      } else {
+        setGeneratedPassword(result.password);
+        toast.success('Benutzer erfolgreich eingeladen');
+      }
+    } catch {
+      toast.error('Fehler beim Einladen des Benutzers');
     } finally {
       setIsLoading(false);
     }

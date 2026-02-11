@@ -14,25 +14,29 @@ import { useAuthStore } from './stores/authStore';
 import { useUIStore } from './stores/uiStore';
 import { useTicketStore } from './stores/ticketStore';
 import { useUserStore } from './stores/userStore';
-import { seedInitialData } from './data/seedData';
 import { ROUTES } from './constants';
 
 function AppInitializer({ children }: { children: React.ReactNode }) {
   const initializeAuth = useAuthStore((state) => state.initializeAuth);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const initializeTheme = useUIStore((state) => state.initializeTheme);
   const loadTickets = useTicketStore((state) => state.loadTickets);
   const loadUsers = useUserStore((state) => state.loadUsers);
 
   useEffect(() => {
-    // Seed initial data on first load
-    seedInitialData();
-
-    // Initialize stores
+    // Initialize theme
     initializeTheme();
+    // Initialize auth (check for existing session)
     initializeAuth();
-    loadTickets();
-    loadUsers();
-  }, [initializeAuth, initializeTheme, loadTickets, loadUsers]);
+  }, [initializeAuth, initializeTheme]);
+
+  // Load data when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadTickets();
+      loadUsers();
+    }
+  }, [isAuthenticated, loadTickets, loadUsers]);
 
   return <>{children}</>;
 }

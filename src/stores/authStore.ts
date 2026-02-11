@@ -1,18 +1,15 @@
 import { create } from 'zustand';
 import type { User } from '../types';
-import { STORAGE_KEYS } from '../constants';
-import { getStorageItem, setStorageItem, removeStorageItem } from '../utils/storage';
-import { verifyPassword } from '../utils/passwordGenerator';
-import type { UserWithPassword } from '../data/mockUsers';
+import { authApi, ApiError } from '../api';
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<boolean>;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
   updateUser: (updates: Partial<User>) => void;
-  initializeAuth: () => void;
+  initializeAuth: () => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set, get) => ({
@@ -21,32 +18,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isLoading: true,
 
   login: async (email: string, password: string) => {
-    const users = getStorageItem<UserWithPassword[]>(STORAGE_KEYS.USERS) || [];
-    const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
-
-    if (!user) {
-      return false;
+    try {
+      const response = await authApi.login({ email, password });
+      set({ user: response.user, isAuthenticated: true });
+      return { success: true };
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return { success: false, error: error.message };
+      }
+      return { success: false, error: 'Ein unerwarteter Fehler ist aufgetreten' };
     }
-
-    if (!verifyPassword(password, user.passwordHash)) {
-      return false;
-    }
-
-    if (!user.isActive) {
-      return false;
-    }
-
-    // Create user object without password
-    const { passwordHash: _, ...userWithoutPassword } = user;
-
-    setStorageItem(STORAGE_KEYS.AUTH, userWithoutPassword);
-    set({ user: userWithoutPassword, isAuthenticated: true });
-
-    return true;
   },
 
-  logout: () => {
-    removeStorageItem(STORAGE_KEYS.AUTH);
+  logout: async () => {
+    try {
+      await authApi.logout();
+    } catch {
+      // Ignore logout errors - clear state anyway
+    }
     set({ user: null, isAuthenticated: false });
   },
 
@@ -55,34 +44,24 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     if (!currentUser) return;
 
     const updatedUser = { ...currentUser, ...updates };
-    setStorageItem(STORAGE_KEYS.AUTH, updatedUser);
-
-    // Also update in users list
-    const users = getStorageItem<UserWithPassword[]>(STORAGE_KEYS.USERS) || [];
-    const userIndex = users.findIndex((u) => u.id === currentUser.id);
-    if (userIndex !== -1) {
-      users[userIndex] = { ...users[userIndex], ...updates };
-      setStorageItem(STORAGE_KEYS.USERS, users);
-    }
-
     set({ user: updatedUser });
   },
 
-  initializeAuth: () => {
-    const savedUser = getStorageItem<User>(STORAGE_KEYS.AUTH);
-    if (savedUser) {
-      // Verify user still exists and is active
-      const users = getStorageItem<UserWithPassword[]>(STORAGE_KEYS.USERS) || [];
-      const user = users.find((u) => u.id === savedUser.id && u.isActive);
-
-      if (user) {
-        set({ user: savedUser, isAuthenticated: true, isLoading: false });
-      } else {
-        removeStorageItem(STORAGE_KEYS.AUTH);
+  initializeAuth: async () => {
+    try {
+      // Try to get current user from session (cookies)
+      const response = await authApi.me();
+      set({ user: response.user, isAuthenticated: true, isLoading: false });
+    } catch {
+      // Not authenticated or session expired
+      try {
+        // Try to refresh the token
+        const response = await authApi.refresh();
+        set({ user: response.user, isAuthenticated: true, isLoading: false });
+      } catch {
+        // Refresh also failed - user needs to login
         set({ user: null, isAuthenticated: false, isLoading: false });
       }
-    } else {
-      set({ isLoading: false });
     }
   },
 }));

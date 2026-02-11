@@ -4,13 +4,10 @@ import {
   KanbanSquare,
   TicketIcon,
   Plus,
-  User,
-  Shield,
   ChevronLeft,
   Leaf,
 } from 'lucide-react';
 import { cn } from '../utils/cn';
-import { useAuth } from '../hooks/useAuth';
 import { useUIStore } from '../stores/uiStore';
 import { ROUTES } from '../constants';
 
@@ -45,7 +42,6 @@ function NavItem({ to, icon, label, collapsed, end = false }: NavItemProps) {
 }
 
 export function Sidebar() {
-  const { isAdmin } = useAuth();
   const { sidebarOpen, setSidebarOpen } = useUIStore();
 
   return (
@@ -104,24 +100,6 @@ export function Sidebar() {
           label="Neue Aufgabe"
           collapsed={!sidebarOpen}
         />
-
-        <div className="pt-4 mt-4 border-t border-sage-100 dark:border-sage-700" />
-
-        <NavItem
-          to={ROUTES.PROFILE}
-          icon={<User className="h-5 w-5" />}
-          label="Mein Profil"
-          collapsed={!sidebarOpen}
-        />
-
-        {isAdmin && (
-          <NavItem
-            to={ROUTES.ADMIN}
-            icon={<Shield className="h-5 w-5" />}
-            label="Team verwalten"
-            collapsed={!sidebarOpen}
-          />
-        )}
       </nav>
 
       {/* Decorative element */}

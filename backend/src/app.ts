@@ -2,7 +2,9 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 import { corsConfig } from './config';
+import { storageConfig } from './config/storage';
 import { errorMiddleware } from './middlewares/error.middleware';
 import routes from './routes';
 import logger from './utils/logger';
@@ -46,6 +48,13 @@ app.use((req, res, next) => {
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Serve uploaded files
+logger.info('Using local file storage at: ' + storageConfig.localStoragePath);
+app.use('/uploads', express.static(storageConfig.localStoragePath, {
+  maxAge: '1d',
+  etag: true,
+}));
 
 // API routes
 app.use('/api/v1', routes);

@@ -32,11 +32,14 @@ export function UserSelect({
     options.push({ value: '', label: 'Nicht zugewiesen' });
   }
 
-  users
-    .filter((user) => user.isActive)
-    .forEach((user) => {
-      options.push({ value: user.id, label: user.name });
-    });
+  // Safety check in case users is not yet loaded
+  if (Array.isArray(users)) {
+    users
+      .filter((user) => user.isActive)
+      .forEach((user) => {
+        options.push({ value: user.id, label: user.name });
+      });
+  }
 
   return (
     <Select

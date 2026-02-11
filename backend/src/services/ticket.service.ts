@@ -14,6 +14,8 @@ export class TicketService {
     dueDate: true,
     createdAt: true,
     updatedAt: true,
+    creatorId: true,
+    assigneeId: true,
     creator: {
       select: {
         id: true,
@@ -98,6 +100,25 @@ export class TicketService {
       where: { id },
       select: {
         ...this.selectFields,
+        creatorId: true,
+        assigneeId: true,
+        comments: {
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            authorId: true,
+            author: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                avatarUrl: true,
+              },
+            },
+          },
+          orderBy: { createdAt: 'asc' },
+        },
         images: {
           select: {
             id: true,

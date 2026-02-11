@@ -1,20 +1,20 @@
 import { Outlet } from 'react-router-dom';
-import { Leaf } from 'lucide-react';
+import { Ticket } from 'lucide-react';
 import { ToastContainer } from '../components/feedback/ToastContainer';
 
 export function AuthLayout() {
   return (
     <div className="min-h-screen flex items-center justify-center p-6 relative overflow-hidden">
       {/* Decorative background elements */}
-      <div className="absolute top-20 left-20 w-64 h-64 bg-calm-200/30 dark:bg-calm-800/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 right-20 w-96 h-96 bg-sage-200/30 dark:bg-sage-800/20 rounded-full blur-3xl" />
+      <div className="absolute top-20 left-20 w-64 h-64 bg-warmth-200/30 dark:bg-warmth-800/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-20 w-96 h-96 bg-sand-200/30 dark:bg-sand-800/20 rounded-full blur-3xl" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sand-200/20 dark:bg-sand-900/10 rounded-full blur-3xl" />
 
       <div className="w-full max-w-md relative z-10">
         {/* Logo */}
         <div className="flex flex-col items-center mb-10">
-          <div className="w-16 h-16 bg-gradient-to-br from-calm-400 to-sage-400 rounded-3xl flex items-center justify-center shadow-soft-lg mb-4">
-            <Leaf className="h-8 w-8 text-white" />
+          <div className="w-16 h-16 bg-gradient-to-br from-warmth-400 to-warmth-500 rounded-3xl flex items-center justify-center shadow-soft-lg mb-4">
+            <Ticket className="h-8 w-8 text-white" />
           </div>
           <h1 className="text-2xl font-semibold text-sage-800 dark:text-sage-100">
             Aufgaben

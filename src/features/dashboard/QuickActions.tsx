@@ -11,14 +11,14 @@ export function QuickActions() {
       description: 'Erstelle eine neue Aufgabe für dein Team',
       icon: Plus,
       to: ROUTES.TICKET_NEW,
-      gradient: 'from-calm-400 to-calm-500',
+      gradient: 'from-warmth-400 to-warmth-500',
     },
     {
       label: 'Board öffnen',
       description: 'Sieh alle Aufgaben auf einen Blick',
       icon: KanbanSquare,
       to: ROUTES.BOARD,
-      gradient: 'from-sage-400 to-sage-500',
+      gradient: 'from-calm-400 to-calm-500',
     },
     {
       label: 'Alle Aufgaben',

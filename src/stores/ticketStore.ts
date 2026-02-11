@@ -1,30 +1,31 @@
 import { create } from 'zustand';
 import type { Ticket, TicketStatus, Comment, TicketImage, TicketFilters } from '../types';
-import { STORAGE_KEYS } from '../constants';
-import { getStorageItem, setStorageItem } from '../utils/storage';
-import { generateId, getNow } from '../utils/dateUtils';
+import { ticketsApi, ApiError } from '../api';
 
 interface TicketState {
   tickets: Ticket[];
   filters: TicketFilters;
   isLoading: boolean;
+  error: string | null;
 
   // CRUD operations
-  loadTickets: () => void;
-  createTicket: (ticket: Omit<Ticket, 'id' | 'createdAt' | 'updatedAt' | 'comments'>) => Ticket;
-  updateTicket: (id: string, updates: Partial<Ticket>) => void;
-  deleteTicket: (id: string) => void;
+  loadTickets: () => Promise<void>;
+  createTicket: (
+    ticket: Omit<Ticket, 'id' | 'createdAt' | 'updatedAt' | 'comments' | 'images'>
+  ) => Promise<Ticket>;
+  updateTicket: (id: string, updates: Partial<Ticket>) => Promise<void>;
+  deleteTicket: (id: string) => Promise<void>;
 
   // Status management
-  updateStatus: (id: string, status: TicketStatus) => void;
+  updateStatus: (id: string, status: TicketStatus) => Promise<void>;
 
   // Comments
-  addComment: (ticketId: string, authorId: string, content: string) => void;
-  deleteComment: (ticketId: string, commentId: string) => void;
+  addComment: (ticketId: string, content: string) => Promise<void>;
+  deleteComment: (ticketId: string, commentId: string) => Promise<void>;
 
   // Images
-  addImages: (ticketId: string, images: TicketImage[]) => void;
-  removeImage: (ticketId: string, imageId: string) => void;
+  uploadImages: (ticketId: string, files: File[]) => Promise<TicketImage[]>;
+  removeImage: (ticketId: string, imageId: string) => Promise<void>;
 
   // Filters
   setFilters: (filters: Partial<TicketFilters>) => void;
@@ -34,6 +35,9 @@ interface TicketState {
   getTicketById: (id: string) => Ticket | undefined;
   getFilteredTickets: () => Ticket[];
   getTicketsByStatus: (status: TicketStatus) => Ticket[];
+
+  // Refresh
+  refreshTicket: (id: string) => Promise<void>;
 }
 
 const defaultFilters: TicketFilters = {
@@ -47,124 +51,172 @@ export const useTicketStore = create<TicketState>((set, get) => ({
   tickets: [],
   filters: defaultFilters,
   isLoading: true,
+  error: null,
 
-  loadTickets: () => {
-    const savedTickets = getStorageItem<Ticket[]>(STORAGE_KEYS.TICKETS) || [];
-    set({ tickets: savedTickets, isLoading: false });
+  loadTickets: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      const tickets = await ticketsApi.getAll();
+      set({ tickets, isLoading: false });
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Laden der Tickets';
+      set({ error: message, isLoading: false });
+    }
   },
 
-  createTicket: (ticketData) => {
-    const newTicket: Ticket = {
-      ...ticketData,
-      id: generateId(),
-      comments: [],
-      createdAt: getNow(),
-      updatedAt: getNow(),
-    };
+  createTicket: async (ticketData) => {
+    try {
+      const newTicket = await ticketsApi.create({
+        title: ticketData.title,
+        description: ticketData.description,
+        priority: ticketData.priority,
+        dueDate: ticketData.dueDate,
+        assigneeId: ticketData.assigneeId,
+      });
 
-    set((state) => {
-      const updatedTickets = [...state.tickets, newTicket];
-      setStorageItem(STORAGE_KEYS.TICKETS, updatedTickets);
-      return { tickets: updatedTickets };
-    });
+      set((state) => ({
+        tickets: [...state.tickets, newTicket],
+      }));
 
-    return newTicket;
+      return newTicket;
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Erstellen des Tickets';
+      throw new Error(message);
+    }
   },
 
-  updateTicket: (id, updates) => {
-    set((state) => {
-      const updatedTickets = state.tickets.map((ticket) =>
-        ticket.id === id
-          ? { ...ticket, ...updates, updatedAt: getNow() }
-          : ticket
-      );
-      setStorageItem(STORAGE_KEYS.TICKETS, updatedTickets);
-      return { tickets: updatedTickets };
-    });
+  updateTicket: async (id, updates) => {
+    try {
+      const updatedTicket = await ticketsApi.update(id, {
+        title: updates.title,
+        description: updates.description,
+        priority: updates.priority,
+        dueDate: updates.dueDate,
+        assigneeId: updates.assigneeId,
+      });
+
+      set((state) => ({
+        tickets: state.tickets.map((ticket) =>
+          ticket.id === id ? updatedTicket : ticket
+        ),
+      }));
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Aktualisieren des Tickets';
+      throw new Error(message);
+    }
   },
 
-  deleteTicket: (id) => {
-    set((state) => {
-      const updatedTickets = state.tickets.filter((ticket) => ticket.id !== id);
-      setStorageItem(STORAGE_KEYS.TICKETS, updatedTickets);
-      return { tickets: updatedTickets };
-    });
+  deleteTicket: async (id) => {
+    try {
+      await ticketsApi.delete(id);
+      set((state) => ({
+        tickets: state.tickets.filter((ticket) => ticket.id !== id),
+      }));
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Löschen des Tickets';
+      throw new Error(message);
+    }
   },
 
-  updateStatus: (id, status) => {
-    get().updateTicket(id, { status });
+  updateStatus: async (id, status) => {
+    try {
+      const updatedTicket = await ticketsApi.updateStatus(id, status);
+      set((state) => ({
+        tickets: state.tickets.map((ticket) =>
+          ticket.id === id ? updatedTicket : ticket
+        ),
+      }));
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Aktualisieren des Status';
+      throw new Error(message);
+    }
   },
 
-  addComment: (ticketId, authorId, content) => {
-    const comment: Comment = {
-      id: generateId(),
-      ticketId,
-      authorId,
-      content,
-      createdAt: getNow(),
-    };
-
-    set((state) => {
-      const updatedTickets = state.tickets.map((ticket) =>
-        ticket.id === ticketId
-          ? {
-              ...ticket,
-              comments: [...ticket.comments, comment],
-              updatedAt: getNow(),
-            }
-          : ticket
-      );
-      setStorageItem(STORAGE_KEYS.TICKETS, updatedTickets);
-      return { tickets: updatedTickets };
-    });
+  addComment: async (ticketId, content) => {
+    try {
+      const comment = await ticketsApi.addComment(ticketId, content);
+      set((state) => ({
+        tickets: state.tickets.map((ticket) =>
+          ticket.id === ticketId
+            ? { ...ticket, comments: [...ticket.comments, comment] }
+            : ticket
+        ),
+      }));
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Hinzufügen des Kommentars';
+      throw new Error(message);
+    }
   },
 
-  deleteComment: (ticketId, commentId) => {
-    set((state) => {
-      const updatedTickets = state.tickets.map((ticket) =>
-        ticket.id === ticketId
-          ? {
-              ...ticket,
-              comments: ticket.comments.filter((c) => c.id !== commentId),
-              updatedAt: getNow(),
-            }
-          : ticket
-      );
-      setStorageItem(STORAGE_KEYS.TICKETS, updatedTickets);
-      return { tickets: updatedTickets };
-    });
+  deleteComment: async (ticketId, commentId) => {
+    try {
+      await ticketsApi.deleteComment(ticketId, commentId);
+      set((state) => ({
+        tickets: state.tickets.map((ticket) =>
+          ticket.id === ticketId
+            ? {
+                ...ticket,
+                comments: ticket.comments.filter((c) => c.id !== commentId),
+              }
+            : ticket
+        ),
+      }));
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Löschen des Kommentars';
+      throw new Error(message);
+    }
   },
 
-  addImages: (ticketId, images) => {
-    set((state) => {
-      const updatedTickets = state.tickets.map((ticket) =>
-        ticket.id === ticketId
-          ? {
-              ...ticket,
-              images: [...ticket.images, ...images],
-              updatedAt: getNow(),
-            }
-          : ticket
-      );
-      setStorageItem(STORAGE_KEYS.TICKETS, updatedTickets);
-      return { tickets: updatedTickets };
-    });
+  uploadImages: async (ticketId, files) => {
+    try {
+      const formData = new FormData();
+      files.forEach((file) => {
+        formData.append('images', file);
+      });
+
+      const images = await ticketsApi.uploadImages(ticketId, formData);
+
+      set((state) => ({
+        tickets: state.tickets.map((ticket) =>
+          ticket.id === ticketId
+            ? { ...ticket, images: [...ticket.images, ...images] }
+            : ticket
+        ),
+      }));
+
+      return images;
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Hochladen der Bilder';
+      throw new Error(message);
+    }
   },
 
-  removeImage: (ticketId, imageId) => {
-    set((state) => {
-      const updatedTickets = state.tickets.map((ticket) =>
-        ticket.id === ticketId
-          ? {
-              ...ticket,
-              images: ticket.images.filter((img) => img.id !== imageId),
-              updatedAt: getNow(),
-            }
-          : ticket
-      );
-      setStorageItem(STORAGE_KEYS.TICKETS, updatedTickets);
-      return { tickets: updatedTickets };
-    });
+  removeImage: async (ticketId, imageId) => {
+    try {
+      await ticketsApi.deleteImage(imageId);
+      set((state) => ({
+        tickets: state.tickets.map((ticket) =>
+          ticket.id === ticketId
+            ? {
+                ...ticket,
+                images: ticket.images.filter((img) => img.id !== imageId),
+              }
+            : ticket
+        ),
+      }));
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Löschen des Bildes';
+      throw new Error(message);
+    }
   },
 
   setFilters: (filters) => {
@@ -221,5 +273,16 @@ export const useTicketStore = create<TicketState>((set, get) => ({
 
   getTicketsByStatus: (status) => {
     return get().getFilteredTickets().filter((ticket) => ticket.status === status);
+  },
+
+  refreshTicket: async (id) => {
+    try {
+      const ticket = await ticketsApi.getById(id);
+      set((state) => ({
+        tickets: state.tickets.map((t) => (t.id === id ? ticket : t)),
+      }));
+    } catch (error) {
+      console.error('Failed to refresh ticket:', error);
+    }
   },
 }));

@@ -35,9 +35,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         'relative overflow-hidden'
       ),
       danger: cn(
-        'bg-gradient-to-r from-calm-400 to-calm-500 text-white',
-        'hover:from-calm-500 hover:to-calm-600',
-        'shadow-soft hover:shadow-lg hover:shadow-calm-500/25'
+        'bg-gradient-to-r from-red-400 to-red-500 text-white',
+        'hover:from-red-500 hover:to-red-600',
+        'shadow-soft hover:shadow-lg hover:shadow-red-500/25'
       ),
       soft: cn(
         'bg-white/60 dark:bg-sage-800/60 backdrop-blur-sm text-sage-700 dark:text-sage-200',

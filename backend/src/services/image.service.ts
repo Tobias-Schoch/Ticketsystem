@@ -1,8 +1,9 @@
 import sharp from 'sharp';
-import { PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
-import { v4 as uuidv4 } from 'crypto';
+import { randomUUID } from 'crypto';
+import * as fs from 'fs/promises';
+import * as path from 'path';
 import { prisma } from '../config/database';
-import { s3Client, storageConfig, uploadConfig } from '../config/storage';
+import { storageConfig, uploadConfig } from '../config/storage';
 import { NotFoundError, ForbiddenError, BadRequestError } from '../utils/errors';
 import { validateImageMagicBytes } from '../middlewares/upload.middleware';
 import logger from '../utils/logger';
@@ -82,33 +83,20 @@ export class ImageService {
     mimeType: string
   ): Promise<{ storageKey: string; url: string }> {
     const ext = mimeType.split('/')[1];
-    const storageKey = `images/${uuidv4()}.${ext}`;
+    const storageKey = `images/${randomUUID()}.${ext}`;
 
-    await s3Client.send(
-      new PutObjectCommand({
-        Bucket: storageConfig.bucket,
-        Key: storageKey,
-        Body: buffer,
-        ContentType: mimeType,
-        CacheControl: 'public, max-age=31536000', // 1 year cache
-      })
-    );
+    const filePath = path.join(storageConfig.localStoragePath, storageKey);
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await fs.writeFile(filePath, buffer);
 
-    const url = storageConfig.publicUrl
-      ? `${storageConfig.publicUrl}/${storageKey}`
-      : `${storageConfig.endpoint}/${storageConfig.bucket}/${storageKey}`;
-
+    const url = `/uploads/${storageKey}`;
     return { storageKey, url };
   }
 
   async deleteFromStorage(storageKey: string): Promise<void> {
     try {
-      await s3Client.send(
-        new DeleteObjectCommand({
-          Bucket: storageConfig.bucket,
-          Key: storageKey,
-        })
-      );
+      const filePath = path.join(storageConfig.localStoragePath, storageKey);
+      await fs.unlink(filePath).catch(() => {});
     } catch (error) {
       logger.error('Failed to delete image from storage:', error);
     }
@@ -216,24 +204,14 @@ export class ImageService {
       .jpeg({ quality: 85 })
       .toBuffer();
 
-    // Upload to storage
+    // Save to local storage
     const storageKey = `avatars/${userId}.jpg`;
+    const filePath = path.join(storageConfig.localStoragePath, storageKey);
+    await fs.mkdir(path.dirname(filePath), { recursive: true });
+    await fs.writeFile(filePath, avatarBuffer);
 
-    await s3Client.send(
-      new PutObjectCommand({
-        Bucket: storageConfig.bucket,
-        Key: storageKey,
-        Body: avatarBuffer,
-        ContentType: 'image/jpeg',
-        CacheControl: 'public, max-age=86400', // 1 day cache (avatars may change)
-      })
-    );
-
-    const url = storageConfig.publicUrl
-      ? `${storageConfig.publicUrl}/${storageKey}`
-      : `${storageConfig.endpoint}/${storageConfig.bucket}/${storageKey}`;
-
-    return url;
+    // Add timestamp to bust cache
+    return `/uploads/${storageKey}?t=${Date.now()}`;
   }
 }
 

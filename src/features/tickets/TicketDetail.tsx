@@ -30,26 +30,45 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const creator = getUserById(ticket.creatorId);
   const assignee = ticket.assigneeId ? getUserById(ticket.assigneeId) : null;
   const canEdit = isAdmin || ticket.creatorId === user?.id;
 
-  const handleStatusChange = (status: TicketStatus) => {
-    updateTicket(ticket.id, { status });
+  const handleStatusChange = async (status: TicketStatus) => {
+    try {
+      await updateTicket(ticket.id, { status });
+    } catch {
+      // Error handled by useTickets
+    }
   };
 
-  const handlePriorityChange = (priority: TicketPriority) => {
-    updateTicket(ticket.id, { priority });
+  const handlePriorityChange = async (priority: TicketPriority) => {
+    try {
+      await updateTicket(ticket.id, { priority });
+    } catch {
+      // Error handled by useTickets
+    }
   };
 
-  const handleAssigneeChange = (assigneeId: string) => {
-    updateTicket(ticket.id, { assigneeId: assigneeId || null });
+  const handleAssigneeChange = async (assigneeId: string) => {
+    try {
+      await updateTicket(ticket.id, { assigneeId: assigneeId || null });
+    } catch {
+      // Error handled by useTickets
+    }
   };
 
-  const handleDelete = () => {
-    deleteTicket(ticket.id);
-    navigate(ROUTES.TICKETS);
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteTicket(ticket.id);
+      navigate(ROUTES.TICKETS);
+    } catch {
+      // Error handled by useTickets
+      setIsDeleting(false);
+    }
   };
 
   const openLightbox = (index: number) => {
@@ -226,6 +245,7 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
         description="Möchtest du dieses Ticket wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden."
         confirmLabel="Löschen"
         variant="danger"
+        isLoading={isDeleting}
       />
     </div>
   );

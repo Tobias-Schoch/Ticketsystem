@@ -7,6 +7,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+    "setup": "bash scripts/setup.sh",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:integration": "jest --testPathPattern=integration",
@@ -18,7 +19,6 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.500.0",
     "@prisma/client": "^5.10.0",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",

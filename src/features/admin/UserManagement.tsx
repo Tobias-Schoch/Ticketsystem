@@ -16,18 +16,26 @@ export function UserManagement() {
   const toast = useToast();
 
   const [actionUser, setActionUser] = useState<{ id: string; action: 'deactivate' | 'activate' } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleAction = () => {
+  const handleAction = async () => {
     if (!actionUser) return;
 
-    if (actionUser.action === 'deactivate') {
-      deactivateUser(actionUser.id);
-      toast.success('Benutzer deaktiviert');
-    } else {
-      activateUser(actionUser.id);
-      toast.success('Benutzer aktiviert');
+    setIsLoading(true);
+    try {
+      if (actionUser.action === 'deactivate') {
+        await deactivateUser(actionUser.id);
+        toast.success('Benutzer deaktiviert');
+      } else {
+        await activateUser(actionUser.id);
+        toast.success('Benutzer aktiviert');
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Aktion fehlgeschlagen');
+    } finally {
+      setIsLoading(false);
+      setActionUser(null);
     }
-    setActionUser(null);
   };
 
   return (
@@ -105,6 +113,7 @@ export function UserManagement() {
         }
         confirmLabel={actionUser?.action === 'deactivate' ? 'Deaktivieren' : 'Aktivieren'}
         variant={actionUser?.action === 'deactivate' ? 'danger' : 'default'}
+        isLoading={isLoading}
       />
     </div>
   );

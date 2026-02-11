@@ -3,16 +3,11 @@ import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { useAuth } from '../../hooks/useAuth';
-import { useUserStore } from '../../stores/userStore';
 import { useToast } from '../../stores/toastStore';
-import { verifyPassword } from '../../utils/passwordGenerator';
-import { getStorageItem } from '../../utils/storage';
-import { STORAGE_KEYS } from '../../constants';
-import type { UserWithPassword } from '../../data/mockUsers';
+import { authApi, ApiError } from '../../api';
 
 export function PasswordChangeForm() {
-  const { user } = useAuth();
-  const changePassword = useUserStore((state) => state.changePassword);
+  const { logout } = useAuth();
   const toast = useToast();
 
   const [currentPassword, setCurrentPassword] = useState('');
@@ -31,19 +26,12 @@ export function PasswordChangeForm() {
 
     if (!currentPassword) {
       newErrors.currentPassword = 'Aktuelles Passwort ist erforderlich';
-    } else {
-      // Verify current password
-      const users = getStorageItem<UserWithPassword[]>(STORAGE_KEYS.USERS) || [];
-      const currentUser = users.find((u) => u.id === user?.id);
-      if (currentUser && !verifyPassword(currentPassword, currentUser.passwordHash)) {
-        newErrors.currentPassword = 'Falsches Passwort';
-      }
     }
 
     if (!newPassword) {
       newErrors.newPassword = 'Neues Passwort ist erforderlich';
-    } else if (newPassword.length < 6) {
-      newErrors.newPassword = 'Mindestens 6 Zeichen erforderlich';
+    } else if (newPassword.length < 8) {
+      newErrors.newPassword = 'Mindestens 8 Zeichen erforderlich';
     }
 
     if (!confirmPassword) {
@@ -59,15 +47,27 @@ export function PasswordChangeForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate() || !user) return;
+    if (!validate()) return;
 
     setIsLoading(true);
     try {
-      changePassword(user.id, newPassword);
-      toast.success('Passwort geändert');
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
+      await authApi.changePassword({
+        currentPassword,
+        newPassword,
+      });
+      toast.success('Passwort geändert. Bitte melde dich erneut an.');
+      // Backend invalidates all sessions, so logout and redirect to login
+      await logout();
+    } catch (error) {
+      if (error instanceof ApiError) {
+        if (error.message.includes('incorrect') || error.message.includes('falsch')) {
+          setErrors({ currentPassword: 'Falsches Passwort' });
+        } else {
+          toast.error(error.message);
+        }
+      } else {
+        toast.error('Fehler beim Ändern des Passworts');
+      }
     } finally {
       setIsLoading(false);
     }

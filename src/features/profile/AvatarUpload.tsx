@@ -4,7 +4,8 @@ import { Avatar } from '../../components/ui/Avatar';
 import { Button } from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../stores/toastStore';
-import { compressImage, isValidImageType } from '../../utils/imageUtils';
+import { isValidImageType } from '../../utils/imageUtils';
+import { usersApi } from '../../api';
 
 export function AvatarUpload() {
   const { user, updateUser } = useAuth();
@@ -23,8 +24,14 @@ export function AvatarUpload() {
 
       setIsUploading(true);
       try {
-        const compressedUrl = await compressImage(file);
-        updateUser({ avatarUrl: compressedUrl });
+        // Upload image to backend
+        const formData = new FormData();
+        formData.append('avatar', file);
+        const { avatarUrl } = await usersApi.uploadAvatar(formData);
+
+        // Update user in backend and local state
+        await usersApi.update(user!.id, { avatarUrl });
+        updateUser({ avatarUrl });
         toast.success('Avatar aktualisiert');
       } catch {
         toast.error('Fehler beim Hochladen');
@@ -32,13 +39,18 @@ export function AvatarUpload() {
         setIsUploading(false);
       }
     },
-    [updateUser, toast]
+    [user, updateUser, toast]
   );
 
-  const handleRemove = useCallback(() => {
-    updateUser({ avatarUrl: null });
-    toast.success('Avatar entfernt');
-  }, [updateUser, toast]);
+  const handleRemove = useCallback(async () => {
+    try {
+      await usersApi.update(user!.id, { avatarUrl: null });
+      updateUser({ avatarUrl: null });
+      toast.success('Avatar entfernt');
+    } catch {
+      toast.error('Fehler beim Entfernen');
+    }
+  }, [user, updateUser, toast]);
 
   if (!user) return null;
 

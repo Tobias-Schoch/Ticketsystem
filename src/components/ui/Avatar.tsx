@@ -15,17 +15,17 @@ function getInitials(name: string): string {
   return name.slice(0, 2).toUpperCase();
 }
 
-// Nature-inspired color palette for avatars
+// Warm color palette for avatars
 function getColorFromName(name: string): string {
   const colors = [
-    'bg-gradient-to-br from-calm-400 to-calm-500', // Teal
-    'bg-gradient-to-br from-sage-400 to-sage-500', // Sage
-    'bg-gradient-to-br from-sand-400 to-sand-500', // Sand
-    'bg-gradient-to-br from-warmth-400 to-warmth-500', // Warmth
-    'bg-gradient-to-br from-pink-400 to-pink-500', // Rose
+    'bg-gradient-to-br from-warmth-400 to-warmth-500', // Terracotta
+    'bg-gradient-to-br from-calm-400 to-calm-500', // Dusty Rose
     'bg-gradient-to-br from-amber-400 to-amber-500', // Amber
-    'bg-gradient-to-br from-emerald-400 to-emerald-500', // Emerald
-    'bg-gradient-to-br from-violet-400 to-violet-500', // Violet
+    'bg-gradient-to-br from-orange-400 to-orange-500', // Orange
+    'bg-gradient-to-br from-rose-400 to-rose-500', // Rose
+    'bg-gradient-to-br from-sand-500 to-sand-600', // Sand
+    'bg-gradient-to-br from-yellow-500 to-yellow-600', // Gold
+    'bg-gradient-to-br from-red-400 to-red-500', // Coral
   ];
 
   let hash = 0;
