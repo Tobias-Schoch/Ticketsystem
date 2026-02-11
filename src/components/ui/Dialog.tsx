@@ -91,18 +91,18 @@ export function Dialog({
         {(title || description) && (
           <div
             className={cn(
-              'px-8 pt-8 pb-4',
+              'px-5 sm:px-8 pt-5 sm:pt-8 pb-3 sm:pb-4 pr-12',
               !isAnimatingOut && 'animate-fade-in'
             )}
             style={{ animationDelay: '50ms' }}
           >
             {title && (
-              <h2 className="text-xl font-semibold text-sage-800 dark:text-sage-100">
+              <h2 className="text-lg sm:text-xl font-semibold text-sage-800 dark:text-sage-100">
                 {title}
               </h2>
             )}
             {description && (
-              <p className="mt-2 text-sm text-sage-500 dark:text-sage-400">
+              <p className="mt-1 sm:mt-2 text-sm text-sage-500 dark:text-sage-400">
                 {description}
               </p>
             )}
@@ -113,7 +113,7 @@ export function Dialog({
         <Button
           variant="ghost"
           size="sm"
-          className="absolute top-6 right-6 h-9 w-9 p-0 rounded-full"
+          className="absolute top-4 sm:top-6 right-4 sm:right-6 h-9 w-9 p-0 rounded-full"
           onClick={handleClose}
         >
           <X className="h-5 w-5" />
@@ -122,7 +122,7 @@ export function Dialog({
         {/* Content */}
         <div
           className={cn(
-            'px-8 pb-8',
+            'px-5 sm:px-8 pb-5 sm:pb-8',
             !isAnimatingOut && 'animate-fade-in'
           )}
           style={{ animationDelay: '100ms' }}

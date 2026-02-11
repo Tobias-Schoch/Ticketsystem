@@ -11,9 +11,9 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = 'default', padding = 'md', hover = false, children, ...props }, ref) => {
     const paddingClasses = {
       none: '',
-      sm: 'p-4',
-      md: 'p-6',
-      lg: 'p-8',
+      sm: 'p-3 sm:p-4',
+      md: 'p-4 sm:p-6',
+      lg: 'p-5 sm:p-8',
     };
 
     const variantClasses = {
@@ -37,7 +37,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
       <div
         ref={ref}
         className={cn(
-          'rounded-3xl transition-all duration-300',
+          'rounded-2xl sm:rounded-3xl transition-all duration-300',
           variantClasses[variant],
           paddingClasses[padding],
           hover && 'hover:shadow-xl hover:-translate-y-2 cursor-pointer hover:border-warmth-200/50 dark:hover:border-warmth-700/50',

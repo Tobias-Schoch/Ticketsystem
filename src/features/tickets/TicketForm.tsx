@@ -8,7 +8,6 @@ import { Select } from '../../components/ui/Select';
 import { UserSelect } from '../../components/common/UserSelect';
 import { useTickets } from '../../hooks/useTickets';
 import { useAuth } from '../../hooks/useAuth';
-import { useToast } from '../../stores/toastStore';
 import { PRIORITIES } from '../../constants';
 import type { TicketPriority } from '../../types';
 
@@ -28,7 +27,6 @@ export function TicketForm({ mode = 'create', initialData, ticketId }: TicketFor
   const navigate = useNavigate();
   const { createTicket, updateTicket } = useTickets();
   const { user } = useAuth();
-  const toast = useToast();
 
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');

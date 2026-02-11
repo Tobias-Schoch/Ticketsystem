@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Ticket, TicketStatus, Comment, TicketImage, TicketFilters } from '../types';
+import type { Ticket, TicketStatus, TicketImage, TicketFilters } from '../types';
 import { ticketsApi, ApiError } from '../api';
 
 interface TicketState {

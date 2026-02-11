@@ -18,14 +18,14 @@ function CompactSelect({ icon, value, onChange, options }: CompactSelectProps) {
 
   return (
     <div className="relative group">
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 text-sage-400 dark:text-sage-500 transition-colors duration-150 group-focus-within:text-warmth-500 dark:group-focus-within:text-warmth-400 pointer-events-none">
+      <div className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-sage-400 dark:text-sage-500 transition-colors duration-150 group-focus-within:text-warmth-500 dark:group-focus-within:text-warmth-400 pointer-events-none">
         {icon}
       </div>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className={cn(
-          'h-10 pl-9 pr-8 rounded-xl text-sm appearance-none cursor-pointer',
+          'h-9 sm:h-10 pl-8 sm:pl-9 pr-7 sm:pr-8 rounded-lg sm:rounded-xl text-xs sm:text-sm appearance-none cursor-pointer',
           'bg-white/60 dark:bg-sage-800/60 backdrop-blur-sm',
           'border border-sand-200 dark:border-sage-700',
           'text-sage-700 dark:text-sage-200',
@@ -122,7 +122,7 @@ export function TicketFilters() {
             variant="ghost"
             size="sm"
             onClick={resetFilters}
-            className="h-10 px-3 text-warmth-500 hover:text-warmth-600 dark:text-warmth-400 dark:hover:text-warmth-300 whitespace-nowrap"
+            className="h-9 sm:h-10 px-2 sm:px-3 text-warmth-500 hover:text-warmth-600 dark:text-warmth-400 dark:hover:text-warmth-300 whitespace-nowrap"
           >
             <X className="h-4 w-4" />
             {activeFilterCount > 0 && (

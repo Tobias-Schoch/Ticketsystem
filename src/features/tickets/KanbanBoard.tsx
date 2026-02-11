@@ -5,6 +5,7 @@ import {
   closestCorners,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -12,6 +13,7 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { KanbanColumn } from './KanbanColumn';
 import { TicketCard } from './TicketCard';
 import { useTicketStore } from '../../stores/ticketStore';
@@ -35,6 +37,12 @@ export function KanbanBoard() {
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 200,
+        tolerance: 5,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -113,7 +121,14 @@ export function KanbanBoard() {
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <div className="flex gap-6 overflow-x-auto pb-6 -mx-2 px-2">
+      {/* Mobile scroll hint */}
+      <div className="sm:hidden flex items-center justify-center gap-2 text-sage-400 dark:text-sage-500 text-xs mb-3 animate-pulse">
+        <ChevronLeft className="h-3 w-3" />
+        <span>Wische um mehr zu sehen</span>
+        <ChevronRight className="h-3 w-3" />
+      </div>
+
+      <div className="flex gap-3 sm:gap-4 md:gap-6 overflow-x-auto pb-6 -mx-4 px-4 sm:-mx-2 sm:px-2 snap-x snap-mandatory scroll-smooth">
         {STATUSES.map((status) => (
           <KanbanColumn
             key={status.value}

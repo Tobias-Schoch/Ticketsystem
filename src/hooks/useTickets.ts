@@ -20,7 +20,6 @@ export function useTickets() {
         const ticket = await store.createTicket({
           ...data,
           status: 'open',
-          images: [],
         });
         toast.success('Aufgabe erfolgreich erstellt');
         return ticket;

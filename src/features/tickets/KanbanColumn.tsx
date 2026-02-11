@@ -15,12 +15,12 @@ export function KanbanColumn({ id, title, tickets, emoji }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
-    <div className="flex flex-col w-80 min-w-[320px]">
+    <div className="flex flex-col w-[75vw] sm:w-72 md:w-80 min-w-[260px] sm:min-w-[280px] md:min-w-[320px] flex-shrink-0 snap-center">
       {/* Column header */}
-      <div className="flex items-center gap-3 mb-4 px-2">
-        <span className="text-xl">{emoji}</span>
+      <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 px-2">
+        <span className="text-lg sm:text-xl">{emoji}</span>
         <div>
-          <h3 className="font-semibold text-sage-800 dark:text-sage-100">{title}</h3>
+          <h3 className="font-semibold text-sage-800 dark:text-sage-100 text-sm sm:text-base">{title}</h3>
           <span className="text-xs text-sage-400 dark:text-sage-500">
             {tickets.length} {tickets.length === 1 ? 'Aufgabe' : 'Aufgaben'}
           </span>
@@ -31,9 +31,9 @@ export function KanbanColumn({ id, title, tickets, emoji }: KanbanColumnProps) {
       <div
         ref={setNodeRef}
         className={cn(
-          'flex-1 p-3 rounded-3xl min-h-[300px] transition-all duration-300',
+          'flex-1 p-2 sm:p-3 rounded-2xl sm:rounded-3xl min-h-[200px] sm:min-h-[300px] transition-all duration-300',
           isOver
-            ? 'bg-calm-50 dark:bg-calm-900/30 ring-2 ring-calm-300 dark:ring-calm-600 ring-dashed'
+            ? 'bg-warmth-50 dark:bg-warmth-900/30 ring-2 ring-warmth-300 dark:ring-warmth-600 ring-dashed'
             : 'bg-sage-50/30 dark:bg-sage-800/30'
         )}
       >

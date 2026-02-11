@@ -85,9 +85,9 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
       </Button>
 
       {/* Main content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Left column - Ticket info */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6 order-2 lg:order-1">
           <Card>
             {/* Header */}
             <div className="flex items-start justify-between mb-4">
@@ -122,7 +122,7 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
             </div>
 
             {/* Title */}
-            <h1 className="text-2xl font-bold text-sage-900 dark:text-sage-100 mb-4">
+            <h1 className="text-xl sm:text-2xl font-bold text-sage-900 dark:text-sage-100 mb-3 sm:mb-4">
               {ticket.title}
             </h1>
 
@@ -138,7 +138,7 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
                   <ImageIcon className="h-4 w-4" />
                   Bilder ({ticket.images.length})
                 </h3>
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                   {ticket.images.map((image, index) => (
                     <button
                       key={image.id}
@@ -157,8 +157,8 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
             )}
 
             {/* Meta info */}
-            <div className="mt-6 pt-6 border-t border-sage-200 dark:border-sage-700">
-              <div className="flex items-center gap-4 text-sm text-sage-500 dark:text-sage-400">
+            <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-sage-200 dark:border-sage-700">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-sage-500 dark:text-sage-400">
                 {creator && (
                   <div className="flex items-center gap-2">
                     <Avatar src={creator.avatarUrl} name={creator.name} size="sm" />
@@ -177,7 +177,7 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
         </div>
 
         {/* Right column - Actions */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 order-1 lg:order-2">
           <Card>
             <h3 className="font-semibold text-sage-900 dark:text-sage-100 mb-4">
               Details
