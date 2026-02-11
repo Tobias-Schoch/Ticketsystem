@@ -18,7 +18,7 @@ export interface CreateUserInput {
 export interface UpdateUserInput {
   name?: string;
   email?: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
 }
 
 export interface UserResponse {

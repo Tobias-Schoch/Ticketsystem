@@ -9,7 +9,7 @@ export class TokenService {
     return jwt.sign(
       { ...payload, type: 'access' },
       jwtConfig.accessSecret,
-      { expiresIn: jwtConfig.accessExpiry }
+      { expiresIn: jwtConfig.accessExpiry as jwt.SignOptions['expiresIn'] }
     );
   }
 
@@ -17,7 +17,7 @@ export class TokenService {
     return jwt.sign(
       { ...payload, type: 'refresh' },
       jwtConfig.refreshSecret,
-      { expiresIn: jwtConfig.refreshExpiry }
+      { expiresIn: jwtConfig.refreshExpiry as jwt.SignOptions['expiresIn'] }
     );
   }
 

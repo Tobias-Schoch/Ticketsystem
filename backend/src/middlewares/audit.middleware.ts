@@ -19,10 +19,11 @@ export const createAuditMiddleware = (
 ) => {
   return (req: Request, res: Response, next: NextFunction) => {
     // Store original end function
-    const originalEnd = res.end;
+    const originalEnd = res.end.bind(res);
 
     // Override end to log after response is sent
-    res.end = function (this: Response, ...args: Parameters<typeof originalEnd>) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (res.end as any) = function (chunk?: any, encoding?: BufferEncoding | (() => void), cb?: () => void) {
       // Only log successful operations
       if (res.statusCode >= 200 && res.statusCode < 300) {
         auditService.log({
@@ -36,7 +37,10 @@ export const createAuditMiddleware = (
       }
 
       // Call original end
-      return originalEnd.apply(this, args);
+      if (typeof encoding === 'function') {
+        return originalEnd(chunk, encoding);
+      }
+      return originalEnd(chunk, encoding as BufferEncoding, cb);
     };
 
     next();
