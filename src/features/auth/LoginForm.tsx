@@ -1,0 +1,126 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, Heart } from 'lucide-react';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
+import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../stores/toastStore';
+import { ROUTES } from '../../constants';
+
+export function LoginForm() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const toast = useToast();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+
+  const validate = () => {
+    const newErrors: { email?: string; password?: string } = {};
+
+    if (!email) {
+      newErrors.email = 'Bitte gib deine E-Mail ein';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = 'Das sieht nicht wie eine E-Mail aus';
+    }
+
+    if (!password) {
+      newErrors.password = 'Bitte gib dein Passwort ein';
+    } else if (password.length < 6) {
+      newErrors.password = 'Mindestens 6 Zeichen bitte';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validate()) return;
+
+    setIsLoading(true);
+
+    try {
+      const success = await login(email, password);
+
+      if (success) {
+        toast.success('Schön, dass du da bist!');
+        navigate(ROUTES.DASHBOARD);
+      } else {
+        toast.error('Das hat leider nicht geklappt');
+        setErrors({ password: 'E-Mail oder Passwort stimmt nicht' });
+      }
+    } catch {
+      toast.error('Etwas ist schiefgelaufen');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-xl font-semibold text-sage-800 dark:text-sage-100">
+          Willkommen zurück
+        </h2>
+        <p className="text-sm text-sage-400 dark:text-sage-500 mt-2">
+          Schön, dass du wieder da bist
+        </p>
+      </div>
+
+      <Input
+        label="E-Mail"
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="deine@email.de"
+        icon={<Mail className="h-4 w-4" />}
+        error={errors.email}
+        autoComplete="email"
+      />
+
+      <div className="relative">
+        <Input
+          label="Passwort"
+          type={showPassword ? 'text' : 'password'}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••"
+          icon={<Lock className="h-4 w-4" />}
+          error={errors.password}
+          autoComplete="current-password"
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-4 top-[42px] text-sage-400 dark:text-sage-500 hover:text-sage-600 dark:hover:text-sage-300 transition-colors"
+        >
+          {showPassword ? (
+            <EyeOff className="h-4 w-4" />
+          ) : (
+            <Eye className="h-4 w-4" />
+          )}
+        </button>
+      </div>
+
+      <Button type="submit" className="w-full" isLoading={isLoading}>
+        {isLoading ? 'Einen Moment...' : 'Anmelden'}
+      </Button>
+
+      <div className="mt-8 p-5 bg-gradient-to-br from-calm-50 to-sage-50 dark:from-calm-900/30 dark:to-sage-900/30 rounded-2xl border border-sage-100 dark:border-sage-700">
+        <div className="flex items-center gap-2 text-sage-600 dark:text-sage-300 mb-3">
+          <Heart className="h-4 w-4 text-warmth-400" />
+          <span className="text-sm font-medium">Zum Ausprobieren</span>
+        </div>
+        <div className="space-y-1 text-sm text-sage-500 dark:text-sage-400">
+          <p><span className="text-sage-600 dark:text-sage-300 font-medium">Team-Lead:</span> anna@beispiel.de / anna123</p>
+          <p><span className="text-sage-600 dark:text-sage-300 font-medium">Mitglied:</span> max@beispiel.de / max123</p>
+        </div>
+      </div>
+    </form>
+  );
+}
