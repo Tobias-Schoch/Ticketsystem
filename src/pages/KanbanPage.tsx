@@ -3,7 +3,7 @@ import { KanbanSquare } from 'lucide-react';
 
 export function KanbanPage() {
   return (
-    <div className="space-y-4 sm:space-y-6 animate-fade-in">
+    <div className="h-full flex flex-col gap-4 sm:gap-6 animate-fade-in min-w-0">
       {/* Header */}
       <div className="relative overflow-hidden bg-gradient-to-br from-sand-100 via-sand-50 to-warmth-50 dark:from-sage-900/30 dark:via-sage-900/50 dark:to-warmth-900/30 rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-sand-200 dark:border-sage-700">
         <div className="relative z-10">

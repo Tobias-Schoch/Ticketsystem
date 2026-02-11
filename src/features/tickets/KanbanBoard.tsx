@@ -13,7 +13,6 @@ import {
 } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { KanbanColumn } from './KanbanColumn';
 import { TicketCard } from './TicketCard';
 import { useTicketStore } from '../../stores/ticketStore';
@@ -115,34 +114,29 @@ export function KanbanBoard() {
   );
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      {/* Mobile scroll hint */}
-      <div className="sm:hidden flex items-center justify-center gap-2 text-sage-400 dark:text-sage-500 text-xs mb-3 animate-pulse">
-        <ChevronLeft className="h-3 w-3" />
-        <span>Wische um mehr zu sehen</span>
-        <ChevronRight className="h-3 w-3" />
-      </div>
+    <div className="flex-1 flex flex-col min-h-0">
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex-1 flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth min-w-0">
+          {STATUSES.map((status) => (
+            <KanbanColumn
+              key={status.value}
+              id={status.value}
+              title={status.label}
+              emoji={COLUMN_CONFIG[status.value].emoji}
+              tickets={getTicketsByStatus(status.value)}
+            />
+          ))}
+        </div>
 
-      <div className="flex gap-3 sm:gap-4 md:gap-6 overflow-x-auto pb-6 -mx-4 px-4 sm:-mx-2 sm:px-2 snap-x snap-mandatory scroll-smooth">
-        {STATUSES.map((status) => (
-          <KanbanColumn
-            key={status.value}
-            id={status.value}
-            title={status.label}
-            emoji={COLUMN_CONFIG[status.value].emoji}
-            tickets={getTicketsByStatus(status.value)}
-          />
-        ))}
-      </div>
-
-      <DragOverlay>
-        {activeTicket ? <TicketCard ticket={activeTicket} isDragging /> : null}
-      </DragOverlay>
-    </DndContext>
+        <DragOverlay>
+          {activeTicket ? <TicketCard ticket={activeTicket} isDragging /> : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
   );
 }

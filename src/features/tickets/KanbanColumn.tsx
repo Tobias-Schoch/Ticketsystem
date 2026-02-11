@@ -15,7 +15,7 @@ export function KanbanColumn({ id, title, tickets, emoji }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
-    <div className="flex flex-col w-[75vw] sm:w-72 md:w-80 min-w-[260px] sm:min-w-[280px] md:min-w-[320px] flex-shrink-0 snap-center">
+    <div className="flex flex-col w-72 sm:w-72 md:w-80 flex-shrink-0 snap-center">
       {/* Column header */}
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4 px-2">
         <span className="text-lg sm:text-xl">{emoji}</span>
