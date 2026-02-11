@@ -3,12 +3,14 @@ import { MessageSquare, Clock } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Avatar } from '../../components/ui/Avatar';
+import { useAuth } from '../../hooks/useAuth';
 import { useTicketStore } from '../../stores/ticketStore';
 import { useUserStore } from '../../stores/userStore';
 import { formatRelativeTime } from '../../utils/dateUtils';
 import { PRIORITY_LABELS, STATUS_LABELS } from '../../constants';
 
 export function RecentActivity() {
+  const { user } = useAuth();
   const tickets = useTicketStore((state) => state.tickets);
   const getUserById = useUserStore((state) => state.getUserById);
 
@@ -42,6 +44,7 @@ export function RecentActivity() {
       <CardContent className="space-y-2">
         {recentTickets.map((ticket) => {
           const creator = getUserById(ticket.creatorId);
+          const assignee = ticket.assigneeId ? getUserById(ticket.assigneeId) : null;
           const hasComments = ticket.comments.length > 0;
 
           return (
@@ -64,6 +67,14 @@ export function RecentActivity() {
                   <Badge variant="priority" priority={ticket.priority}>
                     {PRIORITY_LABELS[ticket.priority]}
                   </Badge>
+                  {assignee && (
+                    <div className="flex items-center gap-1.5">
+                      <Avatar src={assignee.avatarUrl} name={assignee.name} size="sm" />
+                      <span className="text-xs text-sage-600 dark:text-sage-400">
+                        {assignee.id === user?.id ? 'Ich' : assignee.name}
+                      </span>
+                    </div>
+                  )}
                   <span className="text-xs text-sage-400 dark:text-sage-500">
                     {formatRelativeTime(ticket.updatedAt)}
                   </span>

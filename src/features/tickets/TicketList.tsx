@@ -70,7 +70,7 @@ export function TicketList() {
                       <div className="flex items-center gap-2 shrink-0">
                         <Avatar src={assignee.avatarUrl} name={assignee.name} size="sm" />
                         <span className="text-sm text-gray-600 dark:text-gray-400">
-                          {assignee.id === user?.id ? 'mich' : assignee.name}
+                          {assignee.id === user?.id ? 'Ich' : assignee.name}
                         </span>
                       </div>
                     )}

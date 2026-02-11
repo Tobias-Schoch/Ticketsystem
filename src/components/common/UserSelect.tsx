@@ -41,7 +41,7 @@ export function UserSelect({
       .forEach((u) => {
         options.push({
           value: u.id,
-          label: u.id === user?.id ? 'mich' : u.name
+          label: u.id === user?.id ? 'Ich' : u.name
         });
       });
   }

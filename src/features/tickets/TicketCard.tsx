@@ -4,6 +4,7 @@ import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Avatar } from '../../components/ui/Avatar';
 import { cn } from '../../utils/cn';
+import { useAuth } from '../../hooks/useAuth';
 import { useUserStore } from '../../stores/userStore';
 import { formatRelativeTime, formatDueDate, isOverdue } from '../../utils/dateUtils';
 import { PRIORITY_LABELS } from '../../constants';
@@ -15,6 +16,7 @@ interface TicketCardProps {
 }
 
 export function TicketCard({ ticket, isDragging = false }: TicketCardProps) {
+  const { user } = useAuth();
   const getUserById = useUserStore((state) => state.getUserById);
   const assignee = ticket.assigneeId ? getUserById(ticket.assigneeId) : null;
 
@@ -89,7 +91,12 @@ export function TicketCard({ ticket, isDragging = false }: TicketCardProps) {
           {/* Assignee - push to end */}
           <div className="ml-auto">
             {assignee ? (
-              <Avatar src={assignee.avatarUrl} name={assignee.name} size="sm" />
+              <div className="flex items-center gap-2">
+                <Avatar src={assignee.avatarUrl} name={assignee.name} size="sm" />
+                <span className="text-xs text-sage-600 dark:text-sage-400">
+                  {assignee.id === user?.id ? 'Ich' : assignee.name}
+                </span>
+              </div>
             ) : (
               <div className="h-8 w-8 rounded-full bg-sage-100 dark:bg-sage-700 flex items-center justify-center">
                 <User className="h-4 w-4 text-sage-400 dark:text-sage-500" />
