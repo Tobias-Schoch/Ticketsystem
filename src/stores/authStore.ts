@@ -8,7 +8,7 @@ interface AuthState {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  updateUser: (updates: { name?: string; avatarUrl?: string | null }) => Promise<void>;
+  updateUser: (updates: { name?: string; email?: string; avatarUrl?: string | null }) => Promise<void>;
   initializeAuth: () => Promise<void>;
 }
 
@@ -39,7 +39,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user: null, isAuthenticated: false });
   },
 
-  updateUser: async (updates: { name?: string; avatarUrl?: string | null }) => {
+  updateUser: async (updates: { name?: string; email?: string; avatarUrl?: string | null }) => {
     const currentUser = get().user;
     if (!currentUser) throw new Error('No user logged in');
 

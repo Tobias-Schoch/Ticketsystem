@@ -14,6 +14,7 @@ export interface CreateUserResponse {
 
 export interface UpdateUserRequest {
   name?: string;
+  email?: string;
   avatarUrl?: string | null;
 }
 

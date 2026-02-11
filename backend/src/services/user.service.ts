@@ -77,8 +77,14 @@ export class UserService {
       throw new NotFoundError('User not found');
     }
 
-    // Check for email uniqueness if email is being changed
+    // Email changes are only allowed for administrators
     if (input.email && input.email !== existingUser.email) {
+      const requester = await prisma.user.findUnique({ where: { id: requesterId } });
+
+      if (!requester || requester.role !== 'administrator') {
+        throw new ConflictError('Only administrators can change email addresses');
+      }
+
       const emailExists = await prisma.user.findUnique({
         where: { email: input.email },
       });
