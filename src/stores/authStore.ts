@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import type { User } from '../types';
-import { authApi, ApiError } from '../api';
+import { authApi, usersApi, ApiError } from '../api';
 
 interface AuthState {
   user: User | null;
@@ -8,7 +8,7 @@ interface AuthState {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
-  updateUser: (updates: Partial<User>) => void;
+  updateUser: (updates: { name?: string; avatarUrl?: string | null }) => Promise<void>;
   initializeAuth: () => Promise<void>;
 }
 
@@ -39,12 +39,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user: null, isAuthenticated: false });
   },
 
-  updateUser: (updates: Partial<User>) => {
+  updateUser: async (updates: { name?: string; avatarUrl?: string | null }) => {
     const currentUser = get().user;
-    if (!currentUser) return;
+    if (!currentUser) throw new Error('No user logged in');
 
-    const updatedUser = { ...currentUser, ...updates };
-    set({ user: updatedUser });
+    try {
+      // Call API to save changes to backend
+      const updatedUser = await usersApi.update(currentUser.id, updates);
+      // Update local state with response from backend
+      set({ user: updatedUser });
+    } catch (error) {
+      if (error instanceof ApiError) {
+        throw new Error(error.message);
+      }
+      throw new Error('Fehler beim Aktualisieren des Profils');
+    }
   },
 
   initializeAuth: async () => {

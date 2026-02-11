@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
@@ -10,6 +10,19 @@ import { useTickets } from '../../hooks/useTickets';
 import { useAuth } from '../../hooks/useAuth';
 import { PRIORITIES } from '../../constants';
 import type { TicketPriority } from '../../types';
+
+const CUTE_PLACEHOLDERS = [
+  'z.B. Blumen für das Büro bestellen 🌸',
+  'z.B. Kaffeemaschine reparieren ☕',
+  'z.B. Meeting mit dem Team planen 📅',
+  'z.B. Drucker entstören 🖨️',
+  'z.B. Geburtstagsgeschenk für Anna besorgen 🎁',
+  'z.B. Neue Pflanzen fürs Büro kaufen 🪴',
+  'z.B. Büroküche aufräumen 🧹',
+  'z.B. Teamausflug organisieren 🚌',
+  'z.B. Neue Schreibtischstühle bestellen 🪑',
+  'z.B. WLAN-Probleme lösen 📡',
+];
 
 interface TicketFormProps {
   mode?: 'create' | 'edit';
@@ -27,6 +40,12 @@ export function TicketForm({ mode = 'create', initialData, ticketId }: TicketFor
   const navigate = useNavigate();
   const { createTicket, updateTicket } = useTickets();
   const { user } = useAuth();
+
+  // Random placeholder - only calculated once per component mount
+  const randomPlaceholder = useMemo(
+    () => CUTE_PLACEHOLDERS[Math.floor(Math.random() * CUTE_PLACEHOLDERS.length)],
+    []
+  );
 
   const [title, setTitle] = useState(initialData?.title || '');
   const [description, setDescription] = useState(initialData?.description || '');
@@ -101,7 +120,7 @@ export function TicketForm({ mode = 'create', initialData, ticketId }: TicketFor
         label="Was soll erledigt werden?"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        placeholder="z.B. Blumen für das Büro bestellen"
+        placeholder={randomPlaceholder}
         error={errors.title}
       />
 

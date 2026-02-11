@@ -9,21 +9,16 @@ export function ProfileForm() {
   const toast = useToast();
 
   const [name, setName] = useState(user?.name || '');
-  const [email, setEmail] = useState(user?.email || '');
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string }>({});
 
   const validate = () => {
-    const newErrors: { name?: string; email?: string } = {};
+    const newErrors: { name?: string } = {};
 
     if (!name.trim()) {
       newErrors.name = 'Name ist erforderlich';
-    }
-
-    if (!email.trim()) {
-      newErrors.email = 'E-Mail ist erforderlich';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Ungültige E-Mail-Adresse';
+    } else if (name.trim().length < 2) {
+      newErrors.name = 'Name muss mindestens 2 Zeichen lang sein';
     }
 
     setErrors(newErrors);
@@ -37,8 +32,11 @@ export function ProfileForm() {
 
     setIsLoading(true);
     try {
-      updateUser({ name: name.trim(), email: email.trim() });
+      await updateUser({ name: name.trim() });
       toast.success('Profil aktualisiert');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Fehler beim Speichern';
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -56,9 +54,9 @@ export function ProfileForm() {
       <Input
         label="E-Mail"
         type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        error={errors.email}
+        value={user?.email || ''}
+        disabled
+        hint="E-Mail-Adresse kann derzeit nicht geändert werden"
       />
 
       <div className="flex justify-end pt-2">

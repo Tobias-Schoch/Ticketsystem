@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, Heart } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Button } from '../../components/ui/Button';
 import { Input } from '../../components/ui/Input';
 import { useAuth } from '../../hooks/useAuth';
@@ -110,16 +110,6 @@ export function LoginForm() {
       <Button type="submit" className="w-full" isLoading={isLoading}>
         {isLoading ? 'Einen Moment...' : 'Anmelden'}
       </Button>
-
-      <div className="mt-8 p-5 bg-gradient-to-br from-warmth-50 to-sand-50 dark:from-warmth-900/30 dark:to-sand-900/30 rounded-2xl border border-sand-200 dark:border-sage-700">
-        <div className="flex items-center gap-2 text-sage-600 dark:text-sage-300 mb-3">
-          <Heart className="h-4 w-4 text-warmth-400" />
-          <span className="text-sm font-medium">Zum Ausprobieren</span>
-        </div>
-        <div className="space-y-1 text-sm text-sage-500 dark:text-sage-400">
-          <p><span className="text-sage-600 dark:text-sage-300 font-medium">Admin:</span> admin@ticketsystem.de / ChangeThisPassword123!</p>
-        </div>
-      </div>
     </form>
   );
 }
