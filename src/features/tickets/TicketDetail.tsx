@@ -216,7 +216,7 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
                 <Avatar src={assignee.avatarUrl} name={assignee.name} />
                 <div>
                   <p className="font-medium text-sage-900 dark:text-sage-100">
-                    {assignee.name}
+                    {assignee.id === user?.id ? 'mich' : assignee.name}
                   </p>
                   <p className="text-sm text-sage-500 dark:text-sage-400">
                     {assignee.email}

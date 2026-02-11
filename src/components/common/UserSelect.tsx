@@ -1,3 +1,4 @@
+import { useAuth } from '../../hooks/useAuth';
 import { useUserStore } from '../../stores/userStore';
 import { Select, type SelectOption } from '../ui/Select';
 
@@ -20,6 +21,7 @@ export function UserSelect({
   includeAll = false,
   error,
 }: UserSelectProps) {
+  const { user } = useAuth();
   const users = useUserStore((state) => state.users);
 
   const options: SelectOption[] = [];
@@ -35,9 +37,12 @@ export function UserSelect({
   // Safety check in case users is not yet loaded
   if (Array.isArray(users)) {
     users
-      .filter((user) => user.isActive)
-      .forEach((user) => {
-        options.push({ value: user.id, label: user.name });
+      .filter((u) => u.isActive)
+      .forEach((u) => {
+        options.push({
+          value: u.id,
+          label: u.id === user?.id ? 'mich' : u.name
+        });
       });
   }
 

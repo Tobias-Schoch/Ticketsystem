@@ -4,12 +4,14 @@ import { Card } from '../../components/ui/Card';
 import { Badge } from '../../components/ui/Badge';
 import { Avatar } from '../../components/ui/Avatar';
 import { EmptyState } from '../../components/common/EmptyState';
+import { useAuth } from '../../hooks/useAuth';
 import { useTicketStore } from '../../stores/ticketStore';
 import { useUserStore } from '../../stores/userStore';
 import { formatRelativeTime } from '../../utils/dateUtils';
 import { STATUS_LABELS, PRIORITY_LABELS, ROUTES } from '../../constants';
 
 export function TicketList() {
+  const { user } = useAuth();
   const getFilteredTickets = useTicketStore((state) => state.getFilteredTickets);
   const getUserById = useUserStore((state) => state.getUserById);
 
@@ -65,7 +67,12 @@ export function TicketList() {
                     </div>
 
                     {assignee && (
-                      <Avatar src={assignee.avatarUrl} name={assignee.name} size="sm" />
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Avatar src={assignee.avatarUrl} name={assignee.name} size="sm" />
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {assignee.id === user?.id ? 'mich' : assignee.name}
+                        </span>
+                      </div>
                     )}
                   </div>
 
