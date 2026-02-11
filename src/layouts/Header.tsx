@@ -61,7 +61,7 @@ export function Header() {
                 {user.name}
               </p>
               <p className="text-xs text-sage-400 dark:text-sage-500">
-                {user.role === 'admin' ? 'Team-Lead' : 'Team-Mitglied'}
+                {user.role === 'administrator' ? 'Administrator' : user.role === 'teamLead' ? 'Team-Lead' : 'Team-Mitglied'}
               </p>
             </div>
             <ChevronDown className={`h-4 w-4 text-sage-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
@@ -80,8 +80,8 @@ export function Header() {
                 <span className="text-sm font-medium">Mein Profil</span>
               </Link>
 
-              {/* Admin Link - only for admins */}
-              {user.role === 'admin' && (
+              {/* Admin Link - only for teamLead and administrator */}
+              {(user.role === 'teamLead' || user.role === 'administrator') && (
                 <Link
                   to={ROUTES.ADMIN}
                   onClick={() => setIsDropdownOpen(false)}

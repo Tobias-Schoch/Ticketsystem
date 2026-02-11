@@ -13,7 +13,7 @@ export function InviteUserForm() {
 
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [role, setRole] = useState<'admin' | 'member'>('member');
+  const [role, setRole] = useState<'teamLead' | 'member'>('member');
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; name?: string }>({});
   const [generatedPassword, setGeneratedPassword] = useState<string | null>(null);
@@ -148,10 +148,10 @@ export function InviteUserForm() {
       <Select
         label="Rolle"
         value={role}
-        onChange={(e) => setRole(e.target.value as 'admin' | 'member')}
+        onChange={(e) => setRole(e.target.value as 'teamLead' | 'member')}
         options={[
           { value: 'member', label: 'Mitglied' },
-          { value: 'admin', label: 'Administrator' },
+          { value: 'teamLead', label: 'Team-Lead' },
         ]}
       />
 

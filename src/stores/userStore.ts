@@ -12,7 +12,7 @@ interface UserState {
   createUser: (
     email: string,
     name: string,
-    role: 'admin' | 'member'
+    role: 'teamLead' | 'member'
   ) => Promise<{ user: User; password: string } | { error: string }>;
   updateUser: (id: string, updates: Partial<User>) => Promise<void>;
   deactivateUser: (id: string) => Promise<void>;

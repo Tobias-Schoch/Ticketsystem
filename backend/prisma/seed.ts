@@ -8,52 +8,89 @@ const SALT_ROUNDS = 12;
 async function main() {
   console.log('Starting database seed...');
 
-  const adminEmail = process.env.ADMIN_EMAIL || 'admin@ticketsystem.de';
-  const adminPassword = process.env.ADMIN_PASSWORD || 'ChangeThisPassword123!';
-  const adminName = process.env.ADMIN_NAME || 'Administrator';
+  // Create Administrator (super admin, hidden from team list)
+  const administratorEmail = 'administrator@ticketsystem.de';
+  const administratorPassword = process.env.ADMIN_PASSWORD || 'ChangeThisPassword123!';
 
-  // Check if admin already exists
-  const existingAdmin = await prisma.user.findUnique({
-    where: { email: adminEmail },
+  const existingAdministrator = await prisma.user.findUnique({
+    where: { email: administratorEmail },
   });
 
-  if (existingAdmin) {
-    console.log(`Admin user already exists: ${adminEmail}`);
-    return;
+  if (!existingAdministrator) {
+    const passwordHash = await bcrypt.hash(administratorPassword, SALT_ROUNDS);
+
+    const administrator = await prisma.user.create({
+      data: {
+        email: administratorEmail,
+        passwordHash,
+        name: 'Administrator',
+        role: UserRole.administrator,
+        isActive: true,
+      },
+    });
+
+    console.log(`Administrator created:`);
+    console.log(`  Email: ${administrator.email}`);
+    console.log(`  Role: ${administrator.role}`);
+
+    await prisma.auditLog.create({
+      data: {
+        action: 'USER_CREATED',
+        entityType: 'User',
+        entityId: administrator.id,
+        details: {
+          email: administrator.email,
+          role: administrator.role,
+          createdBy: 'SYSTEM_SEED',
+        },
+      },
+    });
+  } else {
+    console.log(`Administrator already exists: ${administratorEmail}`);
   }
 
-  // Hash password
-  const passwordHash = await bcrypt.hash(adminPassword, SALT_ROUNDS);
+  // Create Team-Lead
+  const teamLeadEmail = process.env.ADMIN_EMAIL || 'admin@ticketsystem.de';
+  const teamLeadPassword = process.env.ADMIN_PASSWORD || 'ChangeThisPassword123!';
+  const teamLeadName = process.env.ADMIN_NAME || 'Team-Lead';
 
-  // Create admin user
-  const admin = await prisma.user.create({
-    data: {
-      email: adminEmail,
-      passwordHash,
-      name: adminName,
-      role: UserRole.admin,
-      isActive: true,
-    },
+  const existingTeamLead = await prisma.user.findUnique({
+    where: { email: teamLeadEmail },
   });
 
-  console.log(`Admin user created successfully:`);
-  console.log(`  Email: ${admin.email}`);
-  console.log(`  Name: ${admin.name}`);
-  console.log(`  Role: ${admin.role}`);
+  if (!existingTeamLead) {
+    const passwordHash = await bcrypt.hash(teamLeadPassword, SALT_ROUNDS);
 
-  // Create audit log for admin creation
-  await prisma.auditLog.create({
-    data: {
-      action: 'USER_CREATED',
-      entityType: 'User',
-      entityId: admin.id,
-      details: {
-        email: admin.email,
-        role: admin.role,
-        createdBy: 'SYSTEM_SEED',
+    const teamLead = await prisma.user.create({
+      data: {
+        email: teamLeadEmail,
+        passwordHash,
+        name: teamLeadName,
+        role: UserRole.teamLead,
+        isActive: true,
       },
-    },
-  });
+    });
+
+    console.log(`Team-Lead created:`);
+    console.log(`  Email: ${teamLead.email}`);
+    console.log(`  Name: ${teamLead.name}`);
+    console.log(`  Role: ${teamLead.role}`);
+
+    await prisma.auditLog.create({
+      data: {
+        action: 'USER_CREATED',
+        entityType: 'User',
+        entityId: teamLead.id,
+        details: {
+          email: teamLead.email,
+          role: teamLead.role,
+          createdBy: 'SYSTEM_SEED',
+        },
+      },
+    });
+  } else {
+    console.log(`Team-Lead already exists: ${teamLeadEmail}`);
+  }
 
   console.log('Seed completed successfully!');
 }

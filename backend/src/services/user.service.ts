@@ -3,9 +3,12 @@ import { NotFoundError, ConflictError } from '../utils/errors';
 import { UserResponse, UpdateUserInput } from '../types';
 
 export class UserService {
-  async findAll(includeInactive: boolean = false): Promise<UserResponse[]> {
+  async findAll(includeInactive: boolean = false, includeAdministrators: boolean = false): Promise<UserResponse[]> {
     const users = await prisma.user.findMany({
-      where: includeInactive ? {} : { isActive: true },
+      where: {
+        ...(includeInactive ? {} : { isActive: true }),
+        ...(includeAdministrators ? {} : { role: { not: 'administrator' } }),
+      },
       select: {
         id: true,
         email: true,

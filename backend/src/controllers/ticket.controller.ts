@@ -4,6 +4,9 @@ import { sendSuccess, sendCreated, sendNoContent, sendPaginated } from '../utils
 import { CreateTicketInput, UpdateTicketInput, TicketFilterInput } from '../validators/ticket.validator';
 import { TicketStatus } from '@prisma/client';
 
+// Helper to check if user has elevated permissions (teamLead or administrator)
+const hasElevatedRole = (role: string) => role === 'teamLead' || role === 'administrator';
+
 export class TicketController {
   async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -42,7 +45,7 @@ export class TicketController {
     try {
       const { id } = req.params;
       const input = req.body as UpdateTicketInput;
-      const isAdmin = req.user!.role === 'admin';
+      const isAdmin = hasElevatedRole(req.user!.role);
 
       const ticket = await ticketService.update(id, input, req.user!.id, isAdmin);
 
@@ -56,7 +59,7 @@ export class TicketController {
     try {
       const { id } = req.params;
       const { status } = req.body as { status: TicketStatus };
-      const isAdmin = req.user!.role === 'admin';
+      const isAdmin = hasElevatedRole(req.user!.role);
 
       const ticket = await ticketService.updateStatus(id, status, req.user!.id, isAdmin);
 
@@ -69,7 +72,7 @@ export class TicketController {
   async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { id } = req.params;
-      const isAdmin = req.user!.role === 'admin';
+      const isAdmin = hasElevatedRole(req.user!.role);
 
       await ticketService.delete(id, req.user!.id, isAdmin);
 

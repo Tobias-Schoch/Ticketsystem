@@ -9,7 +9,8 @@ datasource db {
 
 // Enums
 enum UserRole {
-  admin
+  administrator
+  teamLead
   member
 }
 

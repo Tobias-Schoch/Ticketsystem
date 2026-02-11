@@ -3,6 +3,8 @@ import { imageService } from '../services/image.service';
 import { sendSuccess, sendCreated, sendNoContent } from '../utils/response';
 import { BadRequestError } from '../utils/errors';
 
+const hasElevatedRole = (role: string) => role === 'teamLead' || role === 'administrator';
+
 export class ImageController {
   async uploadTicketImages(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -24,7 +26,7 @@ export class ImageController {
   async deleteImage(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { imageId } = req.params;
-      const isAdmin = req.user!.role === 'admin';
+      const isAdmin = hasElevatedRole(req.user!.role);
 
       await imageService.deleteImage(imageId, req.user!.id, isAdmin);
 

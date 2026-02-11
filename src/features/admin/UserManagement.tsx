@@ -57,8 +57,8 @@ export function UserManagement() {
                     {isCurrentUser && (
                       <Badge>Du</Badge>
                     )}
-                    <Badge className={user.role === 'admin' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400' : ''}>
-                      {user.role === 'admin' ? 'Admin' : 'Mitglied'}
+                    <Badge className={user.role === 'teamLead' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400' : ''}>
+                      {user.role === 'teamLead' ? 'Team-Lead' : 'Mitglied'}
                     </Badge>
                     {!user.isActive && (
                       <Badge className="bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">

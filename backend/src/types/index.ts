@@ -25,7 +25,7 @@ export interface PaginatedResponse<T> {
 export interface JwtPayload {
   userId: string;
   email: string;
-  role: 'admin' | 'member';
+  role: 'administrator' | 'teamLead' | 'member';
   type: 'access' | 'refresh';
 }
 

@@ -4,7 +4,7 @@ import type { User } from '../types';
 export interface CreateUserRequest {
   email: string;
   name: string;
-  role: 'admin' | 'member';
+  role: 'teamLead' | 'member';
 }
 
 export interface CreateUserResponse {
@@ -56,7 +56,7 @@ export const adminApi = {
   },
 
   // Change user role
-  changeRole: async (id: string, role: 'admin' | 'member'): Promise<User> => {
+  changeRole: async (id: string, role: 'teamLead' | 'member'): Promise<User> => {
     const response = await api.patch<{ user: User }>(`/admin/users/${id}/role`, { role });
     return response.user;
   },

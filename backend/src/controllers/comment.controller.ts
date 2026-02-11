@@ -3,6 +3,8 @@ import { commentService } from '../services/comment.service';
 import { sendSuccess, sendCreated, sendNoContent } from '../utils/response';
 import { CreateCommentInput } from '../validators/comment.validator';
 
+const hasElevatedRole = (role: string) => role === 'teamLead' || role === 'administrator';
+
 export class CommentController {
   async getByTicketId(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -31,7 +33,7 @@ export class CommentController {
   async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { ticketId, commentId } = req.params;
-      const isAdmin = req.user!.role === 'admin';
+      const isAdmin = hasElevatedRole(req.user!.role);
 
       await commentService.delete(ticketId, commentId, req.user!.id, isAdmin);
 

@@ -21,7 +21,7 @@ export class TokenService {
     );
   }
 
-  async generateTokenPair(userId: string, email: string, role: 'admin' | 'member'): Promise<TokenPair> {
+  async generateTokenPair(userId: string, email: string, role: 'administrator' | 'teamLead' | 'member'): Promise<TokenPair> {
     const payload = { userId, email, role };
 
     const accessToken = this.generateAccessToken(payload);

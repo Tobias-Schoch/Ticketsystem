@@ -3,6 +3,8 @@ import { userService } from '../services/user.service';
 import { sendSuccess } from '../utils/response';
 import { UpdateUserInput } from '../validators/user.validator';
 
+const hasElevatedRole = (role: string) => role === 'teamLead' || role === 'administrator';
+
 export class UserController {
   async getAll(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -27,7 +29,7 @@ export class UserController {
     try {
       const { id } = req.params;
       const input = req.body as UpdateUserInput;
-      const isAdmin = req.user!.role === 'admin';
+      const isAdmin = hasElevatedRole(req.user!.role);
 
       const user = await userService.update(id, input, req.user!.id, isAdmin);
       sendSuccess(res, { user }, 'User updated successfully');
