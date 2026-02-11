@@ -11,7 +11,7 @@ export const mockUsers: UserWithPassword[] = [
     email: 'anna@beispiel.de',
     name: 'Anna Bergmann',
     avatarUrl: null,
-    role: 'admin',
+    role: 'teamLead',
     isActive: true,
     createdAt: '2024-01-01T10:00:00.000Z',
     passwordHash: hashPassword('anna123'),
