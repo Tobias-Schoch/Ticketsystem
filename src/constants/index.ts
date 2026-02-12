@@ -15,6 +15,7 @@ export const ROUTES = {
   TICKETS: '/aufgaben',
   TICKET_NEW: '/aufgaben/neu',
   TICKET_DETAIL: '/aufgaben/:id',
+  TICKET_EDIT: '/aufgaben/:id/edit',
   PROFILE: '/profil',
   ADMIN: '/team',
 } as const;

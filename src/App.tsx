@@ -8,6 +8,7 @@ import { KanbanPage } from './pages/KanbanPage';
 import { TicketListPage } from './pages/TicketListPage';
 import { CreateTicketPage } from './pages/CreateTicketPage';
 import { TicketDetailPage } from './pages/TicketDetailPage';
+import { TicketEditPage } from './pages/TicketEditPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { AdminPage } from './pages/AdminPage';
 import { useAuthStore } from './stores/authStore';
@@ -59,6 +60,7 @@ function App() {
               <Route path={ROUTES.TICKETS} element={<TicketListPage />} />
               <Route path={ROUTES.TICKET_NEW} element={<CreateTicketPage />} />
               <Route path={ROUTES.TICKET_DETAIL} element={<TicketDetailPage />} />
+              <Route path={ROUTES.TICKET_EDIT} element={<TicketEditPage />} />
               <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
             </Route>
           </Route>

@@ -56,23 +56,23 @@ export function AvatarUpload() {
 
   return (
     <div className="flex items-center gap-6">
-      <div className="relative">
+      <label className="relative cursor-pointer group">
         <Avatar src={user.avatarUrl} name={user.name} size="xl" />
-        <label className="absolute bottom-0 right-0 p-1.5 bg-blue-600 rounded-full cursor-pointer hover:bg-blue-700 transition-colors">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
           {isUploading ? (
-            <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
           ) : (
-            <Camera className="h-4 w-4 text-white" />
+            <Camera className="h-6 w-6 text-white" />
           )}
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/gif,image/webp"
-            onChange={handleFileChange}
-            className="hidden"
-            disabled={isUploading}
-          />
-        </label>
-      </div>
+        </div>
+        <input
+          type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          onChange={handleFileChange}
+          className="hidden"
+          disabled={isUploading}
+        />
+      </label>
 
       <div>
         <h3 className="font-medium text-gray-900 dark:text-gray-100">{user.name}</h3>

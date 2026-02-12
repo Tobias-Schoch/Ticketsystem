@@ -54,6 +54,7 @@ export function PasswordChangeForm() {
       await authApi.changePassword({
         currentPassword,
         newPassword,
+        confirmPassword,
       });
       toast.success('Passwort geändert. Bitte melde dich erneut an.');
       // Backend invalidates all sessions, so logout and redirect to login

@@ -13,6 +13,7 @@ export interface LoginResponse {
 export interface ChangePasswordRequest {
   currentPassword: string;
   newPassword: string;
+  confirmPassword: string;
 }
 
 export const authApi = {

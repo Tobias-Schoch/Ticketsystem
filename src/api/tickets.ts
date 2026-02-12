@@ -83,6 +83,7 @@ function transformTicket(ticket: BackendTicketResponse): Ticket {
       authorId: c.authorId,
       content: c.content,
       createdAt: c.createdAt,
+      author: c.author,
     })) || [],
     images: ticket.images?.map((img) => ({
       id: img.id,
@@ -175,6 +176,7 @@ export const ticketsApi = {
       authorId: response.comment.authorId,
       content: response.comment.content,
       createdAt: response.comment.createdAt,
+      author: response.comment.author,
     };
   },
 

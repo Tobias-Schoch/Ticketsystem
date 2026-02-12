@@ -66,7 +66,7 @@ export function CommentThread({ ticketId, comments }: CommentThreadProps) {
       {comments.length > 0 && (
         <div className="space-y-3">
           {comments.map((comment) => {
-            const author = getUserById(comment.authorId);
+            const author = comment.author || getUserById(comment.authorId);
             const canDelete = isAdmin || comment.authorId === user?.id;
 
             return (

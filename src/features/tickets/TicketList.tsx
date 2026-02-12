@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { TicketIcon } from 'lucide-react';
 import { Card } from '../../components/ui/Card';
@@ -10,10 +11,45 @@ import { formatRelativeTime } from '../../utils/dateUtils';
 import { STATUS_LABELS, PRIORITY_LABELS, ROUTES } from '../../constants';
 
 export function TicketList() {
-  const getFilteredTickets = useTicketStore((state) => state.getFilteredTickets);
+  const storeTickets = useTicketStore((state) => state.tickets);
+  const filters = useTicketStore((state) => state.filters);
   const getUserById = useUserStore((state) => state.getUserById);
 
-  const tickets = getFilteredTickets();
+  const tickets = useMemo(() => {
+    return storeTickets.filter((ticket) => {
+      // Status filter
+      if (filters.status !== 'all' && ticket.status !== filters.status) {
+        return false;
+      }
+
+      // Priority filter
+      if (filters.priority !== 'all' && ticket.priority !== filters.priority) {
+        return false;
+      }
+
+      // Assignee filter
+      if (filters.assigneeId !== 'all') {
+        if (filters.assigneeId === '' && ticket.assigneeId !== null) {
+          return false;
+        }
+        if (filters.assigneeId !== '' && ticket.assigneeId !== filters.assigneeId) {
+          return false;
+        }
+      }
+
+      // Search filter
+      if (filters.search) {
+        const searchLower = filters.search.toLowerCase();
+        const matchesTitle = ticket.title.toLowerCase().includes(searchLower);
+        const matchesDescription = ticket.description.toLowerCase().includes(searchLower);
+        if (!matchesTitle && !matchesDescription) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [storeTickets, filters]);
 
   if (tickets.length === 0) {
     return (

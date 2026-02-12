@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Sun, Moon, LogOut, Menu, Sparkles, User, Users, ChevronDown } from 'lucide-react';
+import { Sun, Moon, LogOut, Menu, Ticket, User, Users, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../hooks/useTheme';
@@ -44,7 +44,7 @@ export function Header() {
 
       {/* Greeting - Desktop */}
       <div className="hidden lg:flex items-center gap-2 text-sage-600 dark:text-sage-300">
-        <Sparkles className="h-4 w-4 text-warmth-400" />
+        <Ticket className="h-4 w-4 text-warmth-400" />
         <span className="text-sm">{getGreeting()}</span>
       </div>
 

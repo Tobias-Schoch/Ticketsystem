@@ -147,6 +147,8 @@ export const useTicketStore = create<TicketState>((set, get) => ({
             : ticket
         ),
       }));
+      // Refresh ticket to ensure full sync with server
+      await get().refreshTicket(ticketId);
     } catch (error) {
       const message =
         error instanceof ApiError ? error.message : 'Fehler beim Hinzufügen des Kommentars';

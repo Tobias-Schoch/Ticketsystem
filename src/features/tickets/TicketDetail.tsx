@@ -24,7 +24,7 @@ interface TicketDetailProps {
 export function TicketDetail({ ticket }: TicketDetailProps) {
   const navigate = useNavigate();
   const { isAdmin, user } = useAuth();
-  const { updateTicket, deleteTicket } = useTickets();
+  const { updateTicket, updateStatus, deleteTicket } = useTickets();
   const getUserById = useUserStore((state) => state.getUserById);
 
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -38,7 +38,7 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
 
   const handleStatusChange = async (status: TicketStatus) => {
     try {
-      await updateTicket(ticket.id, { status });
+      await updateStatus(ticket.id, status);
     } catch {
       // Error handled by useTickets
     }
@@ -67,7 +67,9 @@ export function TicketDetail({ ticket }: TicketDetailProps) {
       navigate(ROUTES.TICKETS);
     } catch {
       // Error handled by useTickets
+    } finally {
       setIsDeleting(false);
+      setShowDeleteDialog(false);
     }
   };
 
