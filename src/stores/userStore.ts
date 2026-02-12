@@ -8,6 +8,7 @@ interface UserState {
   error: string | null;
 
   loadUsers: () => Promise<void>;
+  loadAllUsers: () => Promise<void>;
   getUserById: (id: string) => User | undefined;
   createUser: (
     email: string,
@@ -29,6 +30,18 @@ export const useUserStore = create<UserState>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       const users = await usersApi.getAll();
+      set({ users, isLoading: false });
+    } catch (error) {
+      const message =
+        error instanceof ApiError ? error.message : 'Fehler beim Laden der Benutzer';
+      set({ error: message, isLoading: false });
+    }
+  },
+
+  loadAllUsers: async () => {
+    try {
+      set({ isLoading: true, error: null });
+      const users = await adminApi.getAllUsers();
       set({ users, isLoading: false });
     } catch (error) {
       const message =

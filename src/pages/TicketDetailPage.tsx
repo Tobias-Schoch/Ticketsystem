@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { TicketDetail } from '../features/tickets';
 import { useTicketStore } from '../stores/ticketStore';
@@ -6,7 +7,14 @@ import { ROUTES } from '../constants';
 
 export function TicketDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { getTicketById, isLoading } = useTicketStore();
+  const { getTicketById, refreshTicket, isLoading } = useTicketStore();
+
+  // Refresh ticket to load full data including comments
+  useEffect(() => {
+    if (id) {
+      refreshTicket(id);
+    }
+  }, [id, refreshTicket]);
 
   if (isLoading) {
     return (

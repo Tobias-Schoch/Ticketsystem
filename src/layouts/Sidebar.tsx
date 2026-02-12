@@ -5,7 +5,7 @@ import {
   TicketIcon,
   Plus,
   ChevronLeft,
-  Leaf,
+  Ticket,
 } from 'lucide-react';
 import { cn } from '../utils/cn';
 import { useUIStore } from '../stores/uiStore';
@@ -56,7 +56,7 @@ export function Sidebar() {
         {sidebarOpen && (
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-br from-warmth-400 to-warmth-500 rounded-2xl flex items-center justify-center shadow-soft">
-              <Leaf className="h-5 w-5 text-white" />
+              <Ticket className="h-5 w-5 text-white" />
             </div>
             <div>
               <span className="font-semibold text-sage-800 dark:text-sage-100 block">Aufgaben</span>

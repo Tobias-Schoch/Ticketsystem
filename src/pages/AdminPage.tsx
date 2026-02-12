@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { UserPlus, Users, Shield, Sparkles } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Dialog } from '../components/ui/Dialog';
 import { UserManagement, InviteUserForm } from '../features/admin';
+import { useUserStore } from '../stores/userStore';
 
 export function AdminPage() {
   const [showInviteDialog, setShowInviteDialog] = useState(false);
+  const loadAllUsers = useUserStore((state) => state.loadAllUsers);
+
+  // Load all users including inactive on mount
+  useEffect(() => {
+    loadAllUsers();
+  }, [loadAllUsers]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 animate-fade-in">
